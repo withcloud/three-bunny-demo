@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>threejs-basic-geometry</title>
+    <style>
+        body{
+            font-family: Monospace;
+            background: #f0f0f0;
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+  <div style="font-size: 30px; position: fixed; right: 2vw; ">
+    <p id="seconds" style="border: 1px solid black; padding: 5px;">秒数：30</p>
+    <p id="score" style="border: 1px solid black; padding: 5px;">分数：0</p>
+  </div>
+
+<script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+  import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
+  import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
+  import { CinematicCamera } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/cameras/CinematicCamera.js';
+  //import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
+  import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
+
+
+    var camera, scene, renderer,raycaster,container,stats,number;
+    var score=0,seconds=30;
+    var pointer;
+    let num = 0;
+    const mouse = new THREE.Vector2();
+	let INTERSECTED;//當前點擊對象
+
+    const GLTFloader = new GLTFLoader().setPath('models/girl/');
+    main();
+    // render();
+    animate();
+
+    window.timer =  setInterval(() => {
+        seconds -= 1;
+        $("#seconds").text(`秒数：${seconds||0}`)
+        if (seconds <= 0) {
+            score=0
+            seconds=30
+            $("#seconds").text(`秒数：${seconds}`)
+            $("#score").text(`分数：${score}`)
+            clearInterval( window.timer)
+        }
+    }, 1000);
+
+    //主函数
+    function main(){
+        //添加一个div元素
+        container = document.createElement('div')
+        document.body.appendChild(container);
+
+        stats = new Stats();
+	    document.body.appendChild( stats.dom );
+
+        scene = new THREE.Scene();//创建一个新场景
+        scene.background = new THREE.Color( 0xf0f0f0 );
+
+        //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
+        camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight, 1, 500);
+        // camera = new THREE.PerspectiveCamera(10,window.innerWidth/window.innerHeight, 1, 10);
+        camera.position.set(0, 1, 40); //设置相机位置
+        // camera.up.x = 0;
+        // camera.up.y = 0;
+        // camera.up.z = 0;
+        
+        // 渲染
+        var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
+        // axes.rotation.y =-0.5 * Math.PI;
+        scene.add(axes);
+
+        raycaster = new THREE.Raycaster();//3d世界鼠標選中物體獲取器
+        pointer = new THREE.Vector2();//二维向量
+
+        //antialias:true增加抗锯齿效果
+        renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer.setClearColor(new THREE.Color(0x000000));//设置窗口背景颜色为黑
+        renderer.setSize(window.innerWidth, window.innerHeight);//设置窗口尺寸
+        //将renderer关联到container，这个过程类似于获取canvas元素
+        container.appendChild(renderer.domElement);
+      
+        //给场景添加光源
+
+        // var light= new THREE.PointLight(0xffffff);
+        // light.position.set(100,100,100);
+        // scene.add(light);  
+
+        //自然光
+        var ambientLight = new THREE.AmbientLight( 0x606060 );
+        scene.add( ambientLight );
+
+        //平行光源
+        var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        directionalLight.position.set( 0, 0, 0).normalize();
+        scene.add( directionalLight );
+        renderer.domElement.addEventListener('click', onClick, false);
+        renderer.domElement.addEventListener( 'pointermove', onPointerMove );
+
+        // 三维控件
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        plane();
+        cube();
+        // sphere();
+        // cylinder();
+    }
+
+    //创建一个平面
+    function plane(){
+      // 创建一个圆形平面，半径20，圆周方向细分数30
+      var plane = new THREE.CircleGeometry(20,30)
+      var material = new THREE.MeshPhongMaterial({
+            color: 0x999999,
+            // 矩形平面网格模型默认单面显示，可以设置side属性值为THREE.DoubleSide双面显示
+            side: THREE.DoubleSide,
+            // visible: false
+        });
+        var mesh = new THREE.Mesh(plane, material);
+        mesh.name=`plane`
+        mesh.rotation.x = -0.5 * Math.PI;//将平面绕X轴逆时针旋转90度
+
+        scene.add(mesh);//将平面添加到场景中
+  
+        const gridHelper = new THREE.GridHelper( 100, 20 );
+        scene.add( gridHelper );
+    }
+
+    // 检查数组内是否重复
+    function checkInArr(arr,rnd){
+        for(var i = 0; i < arr.length; i++){
+            if(rnd === arr[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    function random(state,value,min) {
+        switch(state){
+            case 0: //x z
+            value=value
+            min=min
+            break;
+            case 1: //x -z 
+            value=value
+            min=-min
+            break;
+            case 2: // -x z
+            value=-value
+            min=min
+            break;
+            case 3: // -x -z
+            value=-value
+            min=-min
+            break;
+        }
+        return Math.floor(Math.random() * value+min);
+    }
+
+    let GLTFobjects=[]//模型對象
+    let result=[]//隨機數字不重複
+    //  创建一个立方体
+
+    function cube(){
+        for(var i=0;i<3;i++){
+            var cubeGeo = new THREE.CubeGeometry(10, 10, 10, 1, 1, 1);//创建立方体
+            var cubeMat = new THREE.MeshLambertMaterial({//创建材料
+                color: Math.random() * 0xffffff,
+                wireframe:false,
+            });
+            
+            // // 立方体
+            // const randomPositons=[
+            //     Math.floor(Math.random() * 10+18),
+            //     Math.floor(Math.random() * -10-18),
+            // ]
+   
+            // var cubeMesh = new THREE.Mesh(cubeGeo, cubeMat);//创建立方体网格模型
+            // cubeMesh.position.set(randomPositons[Math.floor(Math.random() *2)],  0,randomPositons[Math.floor(Math.random() *2)]);//设置立方体的坐标  x z
+            // cubeMesh.name=`cube${i+1}`//設置模型名稱
+            // scene.add(cubeMesh);//将立方体添加到场景中
+
+            const position=[]
+            for(let k=0;k<2;k++){
+                const positionIndex= Math.floor(Math.random() * 4)
+                position.push(random(positionIndex,10,27))
+            }
+    
+           // gltf文件 
+            GLTFloader.load('scene.gltf', function (gltf) {
+                    // 设置模型缩放比例
+                    gltf.scene.scale.set(0.05, 0.05, 0.05);
+                    // 相对X轴旋转弧度(为了让模型加载为合适的姿势)
+                    gltf.scene.position.set(position[0],0, position[1])
+                    // gltf.scene.rotation.x = -0.5 * Math.PI; // 旋转
+                    gltf.scene.lookAt(new THREE.Vector3(0, 0, 0))//模型看向中心
+                    let value = Math.floor(Math.random() * 3)
+                    while (checkInArr(result,value)) {
+                        value = Math.floor(Math.random() * 3)
+                    }
+                    result.push(value)
+                    gltf.scene.traverse( function ( child ) {
+                        // console.log("加載模型",`cube${value}`)
+                        child.name=`cube${value}`
+                        if(child.type === "Group") {
+                            GLTFobjects.push(child);
+                        }
+                    });
+                scene.add(gltf.scene);
+                render();
+            }
+            );
+        }
+    }
+  
+    //创建一个球
+    function sphere(){
+        var sphereGeo = new THREE.SphereGeometry(16, 40, 40);//创建球体
+        var sphereMat = new THREE.MeshLambertMaterial({//创建材料
+            color:0x0000FF,
+            wireframe:false
+        });
+        var sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);//创建球体网格模型
+        sphereMesh.position.set(-25, 10, 0);//设置球的坐标
+        scene.add(sphereMesh);//将球体添加到场景
+    }
+
+    //创建圆柱体
+    function cylinder(){
+        //创建圆柱体
+        var cylinderGeo = new THREE.CylinderGeometry(15, 15 ,40 ,40 ,40);
+        var cylinderMat = new THREE.MeshLambertMaterial({//创建材料
+            color:0xFF6600,
+            wireframe:false
+        });
+        //创建圆柱体网格模型
+        var cylinderMesh = new THREE.Mesh(cylinderGeo, cylinderMat);
+        cylinderMesh.position.set(0, 20, -40);//设置圆柱坐标
+        scene.add(cylinderMesh);//向场景添加圆柱体
+    }
+    
+    //渲染
+    function render(){
+        renderer.render(scene, camera);
+    }
+    
+    // 點擊事件
+    function onClick( event ) {
+        event.preventDefault();
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+        // 获取鼠标点击的3D模型
+        raycaster.setFromCamera( mouse, camera );
+        var intersects = raycaster.intersectObjects( scene.children, true );
+    
+        if ( intersects.length > 0 ) {
+             // 點擊到3D內容
+            const object = intersects[0].object;
+            removeEvent(object)
+        }
+    }
+
+    // 移除事件
+    function removeEvent(object){
+        // 點擊模型坐標
+        const gltfIndex=GLTFobjects.findIndex(gltf=>gltf.name==object.name)
+        if(gltfIndex!=-1){
+            score++
+            $("#score").text(`分数：${score||0}`)
+            num++;
+            scene.remove(GLTFobjects[gltfIndex]);
+            console.log(GLTFobjects[gltfIndex].type)
+            scene.traverse((child) => {
+               
+            if (child.material) {
+                child.material.dispose();
+            }
+            if (child.geometry) {
+                child.geometry.dispose();
+            }
+            child = null;
+            });
+        }
+        if(num>=3){
+            // console.log("重新開始")
+            result=[]
+            GLTFobjects=[]
+            cube();//重新創建對象
+            // console.log("創建模型後")
+            num=0
+        }
+    }
+
+    // 持续更新
+    function animate() {
+        requestAnimationFrame( animate, renderer.domElement );
+        render();
+        stats.update();
+    }
+
+    // 鼠標經過事件
+    function onPointerMove(event) {
+        pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+        raycaster.setFromCamera( pointer, camera );
+        const intersects = raycaster.intersectObjects( scene.children, false );
+            if ( intersects.length > 0 ) {
+                const intersect = intersects[0];
+                render();
+            }
+     }
+
+    //  釋放空間
+     function destory(){
+        scene.clear();
+		renderer.dispose();
+		renderer.content = null;
+     }
+
+</script>
+</body>
+</html>
