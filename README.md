@@ -66,3 +66,4 @@ html5的陀螺仪：https://blog.csdn.net/qq_30100043/article/details/73323617
 获取陀螺仪坐标
 时刻更新坐标
 更新相机转动角度及偏移量
+設置相機原點擺放

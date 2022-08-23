@@ -17,16 +17,11 @@ function DeviceOrientationControls(object) {
   const scope = this;
   this.object = object;//被控制的摄像机。
   this.object.rotation.reorder('YXZ');
-
   this.enabled = true;
   this.deviceOrientation = {};//当前 deviceorientation 事件的对象
   this.screenOrientation = 0;//相对于设备自然朝向的视口朝向，以角度表示（增量为90）。默认为0。
   this.alphaOffset = 0; // radians 角偏移量，以弧度表示，默认为0。
   this.initialOffset = null;
-
-  window.addEventListener('deviceorientation', (event) => {
-    console.log(`${event.alpha} : ${event.beta} : ${event.gamma}`);
-  });
 
   const onDeviceOrientationChangeEvent = function ({ alpha, beta, gamma }) {
     if (scope.initialOffset === null) {
@@ -37,7 +32,6 @@ function DeviceOrientationControls(object) {
     scope.deviceOrientation = { alpha, beta, gamma };
   };
 
-
   const onScreenOrientationChangeEvent = function () {
     scope.screenOrientation = window.orientation || 0;
   };
@@ -47,18 +41,19 @@ function DeviceOrientationControls(object) {
     window.addEventListener('deviceorientation', onDeviceOrientationChangeEvent, false);//手機執行
   }.bind(this);
 
+  // 更新相机三维角度
   // The angles alpha, beta and gamma form a set of intrinsic Tait-Bryan angles of type Z-X'-Y''
   const setObjectQuaternion = function () {
     const zee = new THREE.Vector3(0, 0, 0);
     const euler = new THREE.Euler();
-    const q0 = new THREE.Quaternion();
-    const q1 = new THREE.Quaternion(- Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)); // - PI/2 around the x-axis
+    const q0 = new THREE.Quaternion(0, 0, 0, 0);
+    const q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)); // - PI/2 around the x-axis
     return function (quaternion, alpha, beta, gamma, orient) {
-      console.log(quaternion, alpha, beta, gamma, orient)
-      euler.set(beta, alpha, - gamma, 'YXZ'); // 'ZXY' for the device, but 'YXZ' for us
-      quaternion.setFromEuler(euler); // orient the device
-      quaternion.multiply(q1); // camera looks out the back of the device, not the top
-      quaternion.multiply(q0.setFromAxisAngle(zee, - orient)); // adjust for screen orientation
+      euler.set(beta, alpha, gamma, 'YXZ'); // 'ZXY' for the device, but 'YXZ' for us
+      quaternion.setFromEuler(euler); // orient the device 定位设备
+      quaternion.multiply(q1); // camera looks out the back of the device, not the top 相机从设备的背面看，而不是顶部
+      quaternion.multiply(q0.setFromAxisAngle(zee, orient)); // adjust for screen orientation 调整屏幕方向
+      // quaternion.multiply(q0.setFromAxisAngle(new THREE.Vector3(0, 0, 0), Math.PI / 2)); // adjust for screen orientation 调整屏幕方向
     };
   }();
 
@@ -92,13 +87,14 @@ function DeviceOrientationControls(object) {
     if (scope.enabled === false) return;
     // 陀螺儀變化量
     window.addEventListener("deviceorientation", (event) => {
-      //  移动设备水平放置时，绕Y轴旋转的角度，数值为-90度到90度。
-      if (event?.gamma) {
-        gamma = Number(event?.gamma.toFixed(1)) * speed_percent;
-      }
+
       // 移动设备水平放置时，绕X轴旋转的角度，数值为-180度到180度。
       if (event?.beta) {
         beta = Number(event?.beta.toFixed(1)) * speed_percent;
+      }
+      //  移动设备水平放置时，绕Y轴旋转的角度，数值为-90度到90度。
+      if (event?.gamma) {
+        gamma = Number(event?.gamma.toFixed(1)) * speed_percent;
       }
       // 移动设备水平放置时，绕z轴旋转的角度，数值为0度到360度。
       if (event?.alpha) {
@@ -108,6 +104,7 @@ function DeviceOrientationControls(object) {
       document.getElementById("demo_x").innerHTML = `x = ${beta?.toFixed(1)}`;
       document.getElementById("demo_z").innerHTML = `z = ${alpha?.toFixed(1)}`;
       document.getElementById("demo_y").innerHTML = `y = ${gamma?.toFixed(1)}`;
+      document.getElementById("demo_orient").innerHTML = `orient = ${orient?.toFixed(1)}`;
       scope.deviceOrientation = { alpha, beta, gamma };
       setObjectQuaternion(scope.object.quaternion, alpha, beta, gamma, orient);
     });
@@ -116,14 +113,7 @@ function DeviceOrientationControls(object) {
   this.dispose = function () {
     scope.disconnect();
   };
-  this.getAlpha = function () {
-    const { deviceOrientation: device } = scope;
-    return device && device.alpha ? THREE.Math.degToRad(device.alpha) + scope.alphaOffset : 0;
-  };
-  this.getBeta = function () {
-    const { deviceOrientation: device } = scope;
-    return device && device.beta ? THREE.Math.degToRad(device.beta) : 0;
-  };
+
 };
 DeviceOrientationControls.prototype = Object.assign(Object.create(THREE.EventDispatcher.prototype), {
   constructor: DeviceOrientationControls
