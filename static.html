@@ -65,10 +65,8 @@
     let num = 0;
     const mouse = new THREE.Vector2();
 	let INTERSECTED;//當前點擊對象
-      // mixer 和動畫有關
-      let mixer;
-
-    // const GLTFloader = new GLTFLoader().setPath('models/girl/');
+    // mixer 和動畫有關
+    let mixer;
     
     main();
     // render();
@@ -96,7 +94,7 @@
 	    document.body.appendChild( stats.dom );
 
         scene = new THREE.Scene();//创建一个新场景0xf0f0f0
-        scene.background = new THREE.Color( "0xf0f0f0" );
+        scene.background = new THREE.Color(0xf0f0f0);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
         camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight, 1, 500);
@@ -117,21 +115,21 @@
         //将renderer关联到container，这个过程类似于获取canvas元素
         container.appendChild(renderer.domElement);
       
-        //给场景添加光源
-        // var light= new THREE.PointLight(0xffffff);
-        // light.position.set(100,100,100);
-        // scene.add(light);  
+        //给场景添加光源(会影响兔兔颜色)
+        var light= new THREE.PointLight(0xffffff);
+        light.position.set(100,100,100);
+        scene.add(light);  
 
-        //自然光
-        // var ambientLight = new THREE.AmbientLight( 0x606060 );
-        // scene.add( ambientLight );
+        //自然光(会影响兔兔颜色)
+        var ambientLight = new THREE.AmbientLight( 0x666666 );
+        scene.add( ambientLight );
 
         //平行光源
-        // var directionalLight = new THREE.DirectionalLight( 0xffffff );
-        // directionalLight.position.set( 0, 0, 0).normalize();
-        // scene.add( directionalLight );
-        // renderer.domElement.addEventListener('click', onClick, false);
-        // renderer.domElement.addEventListener( 'pointermove', onPointerMove );
+        var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        directionalLight.position.set( 0, 0, 0).normalize();
+        scene.add( directionalLight );
+        renderer.domElement.addEventListener('click', onClick, false);
+        renderer.domElement.addEventListener( 'pointermove', onPointerMove );
 
         // 當視窗大小改變時
         window.addEventListener('resize', onWindowResize);
@@ -144,7 +142,6 @@
         plane();
         cube();
         deviceorientation();
-      
     }
 
     //创建一个平面
@@ -176,7 +173,6 @@
         }
         return false;
     }
-
 
     function random(state,value,min) {
         switch(state){
@@ -213,23 +209,20 @@
                 const positionIndex= Math.floor(Math.random() * 4)
                 position.push(random(positionIndex,10,27))
             }
-            const loader = new GLTFLoader();// models\girl\scene.gltf models/rabbit/rabbit.glb
-            loader.load('models/rabbit/rabbit.glb', function (gltf) {
-            // GLTFloader.load('scene.gltf', function (gltf) {
+            const loader = new GLTFLoader();
+            loader.load('models/Voxel_RabbitB.glb', function (gltf) {
                     // 设置模型缩放比例
-                    gltf.scene.scale.set(0.5,100,100);
+                    gltf.scene.scale.set(100,100,100);
                     // gltf.scene.scale.set(0.1,0.1,0.1);
                     // 相对X轴旋转弧度(为了让模型加载为合适的姿势)
-                    gltf.scene.position.set(0,0, 0)
-                    // gltf.scene.position.set(position[0],0, position[1])
-                    // gltf.scene.rotation.x = -0.5 * Math.PI; // 旋转
-
-
+                    // gltf.scene.position.set(0,10, 0)
+                    gltf.scene.position.set(position[0],0, position[1])
+                    gltf.scene.rotation.z = -0.5 * Math.PI; // 旋转
+                  
                     mixer = new THREE.AnimationMixer(gltf.scene);
-                    console.log(gltf.animations)
                     const action = mixer.clipAction(gltf.animations[0]);
+                    console.log(action)
                     action.play();
-
                
                     gltf.scene.lookAt(new THREE.Vector3(0, 0, 0))//模型看向中心
 
