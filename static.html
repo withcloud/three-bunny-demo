@@ -69,7 +69,7 @@
     // clock 和動畫有關
     const clock = new THREE.Clock();
     // mixer 和動畫有關
-    let mixer;
+    let mixer1,mixer2,mixer3;
     
     main();
     // render();
@@ -196,6 +196,8 @@
 
     function cube(){
         let currentNum=0
+         // 加载模型
+        const loader = new GLTFLoader();
         for(var i=0;i<3;i++){
             const position=[]
             // x z轴值
@@ -203,28 +205,44 @@
                 const positionIndex= Math.floor(Math.random() * 4)
                 position.push(random(positionIndex,10,27))
             }
-            // 加载模型
-            const loader = new GLTFLoader();
+            // loader.load('models/girl/scene.gltf', function (gltf) {
             loader.load('models/Voxel_RabbitB.glb', function (gltf) {
                     currentNum++
                     // 设置模型缩放比例
                     gltf.scene.scale.set(100,100,100);
                     gltf.scene.position.set(position[0],0, position[1])
-                    gltf.scene.lookAt(new THREE.Vector3(0, 0, 0))//模型看向中心
+                    
+                    //模型看向中心
+                    gltf.scene.lookAt(new THREE.Vector3(0, 0, 0))
                     // 为了让模型加载为合适的姿势
-                    gltf.scene.rotation.y = -0.5 * Math.PI; 
-
+                    gltf.scene.rotation.y =  Math.PI; 
+                   
+                    const mixer = new THREE.AnimationMixer(gltf.scene);
+                   
+                     //   三只动的图纸
+                    if(currentNum==1){
+                        const action = mixer.clipAction(gltf.animations[1]);
+                        action.play();
+                        mixer1=mixer
+                    }else if(currentNum==2){
+                        const action = mixer.clipAction(gltf.animations[2]);
+                        action.play();
+                        mixer2=mixer
+                    }else if(currentNum==3){
+                        const action = mixer.clipAction(gltf.animations[3]);
+                        action.play();
+                        mixer3=mixer
+                    }
+                
                     gltf.scene.traverse( function ( child ) {
                         // console.log("加載模型",`cube${value}`)
                         child.name=`cube${currentNum}`// 根据名字进行删除
                         if(child.type === "Group") {
                             GLTFobjects.push(child);
-                            mixer = new THREE.AnimationMixer(gltf.scene);
-                            const action = mixer.clipAction(gltf.animations[3]);
-                            action.play();
-
                         }
                     });
+
+                  
                 scene.add(gltf.scene);
                 render();
             }
@@ -263,9 +281,7 @@
             $("#score").text(`分数：${score||0}`)
             num++;
             scene.remove(GLTFobjects[gltfIndex]);
-            console.log(GLTFobjects[gltfIndex].type)
             scene.traverse((child) => {
-               
             if (child.material) {
                 child.material.dispose();
             }
@@ -289,7 +305,9 @@
         requestAnimationFrame( animate, renderer.domElement );
         let delta = clock.getDelta();
         delta *= 0.5;
-        if (mixer) mixer.update(delta);
+        if (mixer1) mixer1.update(delta);
+        if (mixer2) mixer2.update(delta);
+        if (mixer3) mixer3.update(delta);
         render();
         stats.update();
     }
