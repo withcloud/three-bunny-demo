@@ -212,8 +212,7 @@
                     gltf.scene.scale.set(100,100,100);
                     gltf.scene.position.set(position[0],0, position[1])
                     
-                    //模型看向中心
-                    gltf.scene.lookAt(new THREE.Vector3(0, 0, 0))
+    
                     // 为了让模型加载为合适的姿势
                     gltf.scene.rotation.y =  Math.PI; 
                    
@@ -235,14 +234,15 @@
                     }
                 
                     gltf.scene.traverse( function ( child ) {
+                        //模型看向中心
+                        child.lookAt(new THREE.Vector3(0, 0, 0))
                         // console.log("加載模型",`cube${value}`)
                         child.name=`cube${currentNum}`// 根据名字进行删除
                         if(child.type === "Group") {
                             GLTFobjects.push(child);
                         }
                     });
-
-                  
+                                
                 scene.add(gltf.scene);
                 render();
             }
