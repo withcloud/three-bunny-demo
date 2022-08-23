@@ -21,15 +21,22 @@
 
 <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
 
-<script type="module">
-  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
-  import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
-  import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
-  import { CinematicCamera } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/cameras/CinematicCamera.js';
-  //import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
-  import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
-  import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
+<script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.module.js"
+      }
+    }
+</script>
 
+<script type="module">
+    import * as THREE from "three";
+
+    //   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+    import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
+    import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
+    // import * as DeviceOrientationControls from "https://cdn.jsdelivr.net/npm/device-orientation-controls@1.1.0/device-orientation-controls.js"
 
     var camera, scene, renderer,raycaster,container,stats,number;
     var score=0,seconds=30;
@@ -70,9 +77,6 @@
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
         camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight, 1, 500);
         camera.position.set(0, 1, 0);//设置相机位置
-        // camera.up.x = 0;
-        // camera.up.y = 0;
-        // camera.up.z = 0;
         
         // 渲染
         var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
@@ -90,7 +94,6 @@
         container.appendChild(renderer.domElement);
       
         //给场景添加光源
-
         // var light= new THREE.PointLight(0xffffff);
         // light.position.set(100,100,100);
         // scene.add(light);  
@@ -116,6 +119,7 @@
 
         plane();
         cube();
+        deviceorientation();
         // sphere();
         // cylinder();
     }
@@ -340,7 +344,18 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+
+    // 陀螺仪事件
+    function deviceorientation(){
+        // const controls = DeviceOrientationControls(camera);
+        // controls.connect();
+        // controls.update();
+        window.addEventListener('deviceorientation', function(event) {
+           console.log(event.alpha + ' : ' + event.beta + ' : ' + event.gamma);
+        });
+    }
     
 </script>
+
 </body>
 </html>
