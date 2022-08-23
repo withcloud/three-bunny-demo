@@ -6,25 +6,44 @@
     <style>
         body{
             font-family: Monospace;
-            background: #f0f0f0;
+            /* background: #f0f0f0; */
             margin: 0px;
-            overflow: hidden;
+            /* overflow: hidden; */
         }
     </style>
 </head>
-<body>
-
+<body >
   <div style="font-size: 30px; position: fixed; right: 2vw; ">
     <p id="seconds" style="border: 1px solid black; padding: 5px;">秒数：30</p>
     <p id="score" style="border: 1px solid black; padding: 5px;">分数：0</p>
+   
+    <p id="alpha" style="border: 1px solid black; padding: 5px;">0</p>
+    <p id="beta" style="border: 1px solid black; padding: 5px;">0</p>
+    <p id="device" style="border: 1px solid black; padding: 5px;">0</p>
   </div>
 
 <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+<script src="./js/camera.js"></script>
 
+<!-- 禁止縮放 -->
+<script>
+    document.addEventListener(
+      "touchmove",
+      function (event) {
+        if (event.scale !== 1) {
+          event.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+</script>
+
+
+<!-- "three": "https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js" -->
 <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.143.0/build/three.module.js"
       }
     }
 </script>
@@ -35,8 +54,10 @@
     //   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
     import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
     import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
-    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
-    // import * as DeviceOrientationControls from "https://cdn.jsdelivr.net/npm/device-orientation-controls@1.1.0/device-orientation-controls.js"
+    // import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
+    import { DeviceOrientationControls } from "./js/controls/DeviceOrientationControls.js";
+    import { OrbitControls } from "./js/controls/OrbitControls.js";
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.143.0/examples/jsm/loaders/GLTFLoader.js';
 
     var camera, scene, renderer,raycaster,container,stats,number;
     var score=0,seconds=30;
@@ -44,8 +65,11 @@
     let num = 0;
     const mouse = new THREE.Vector2();
 	let INTERSECTED;//當前點擊對象
+      // mixer 和動畫有關
+      let mixer;
 
-    const GLTFloader = new GLTFLoader().setPath('models/girl/');
+    // const GLTFloader = new GLTFLoader().setPath('models/girl/');
+    
     main();
     // render();
     animate();
@@ -71,17 +95,17 @@
         stats = new Stats();
 	    document.body.appendChild( stats.dom );
 
-        scene = new THREE.Scene();//创建一个新场景
-        scene.background = new THREE.Color( 0xf0f0f0 );
+        scene = new THREE.Scene();//创建一个新场景0xf0f0f0
+        scene.background = new THREE.Color( "0xf0f0f0" );
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
         camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight, 1, 500);
-        camera.position.set(0, 1, 0);//设置相机位置
+        camera.position.set(0, 50, 100);//设置相机位置
         
         // 渲染
-        var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
-        // axes.rotation.y =-0.5 * Math.PI;
-        scene.add(axes);
+        // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
+        // // axes.rotation.y =-0.5 * Math.PI;
+        // scene.add(axes);
 
         raycaster = new THREE.Raycaster();//3d世界鼠標選中物體獲取器
         pointer = new THREE.Vector2();//二维向量
@@ -99,29 +123,28 @@
         // scene.add(light);  
 
         //自然光
-        var ambientLight = new THREE.AmbientLight( 0x606060 );
-        scene.add( ambientLight );
+        // var ambientLight = new THREE.AmbientLight( 0x606060 );
+        // scene.add( ambientLight );
 
         //平行光源
-        var directionalLight = new THREE.DirectionalLight( 0xffffff );
-        directionalLight.position.set( 0, 0, 0).normalize();
-        scene.add( directionalLight );
-        renderer.domElement.addEventListener('click', onClick, false);
-        renderer.domElement.addEventListener( 'pointermove', onPointerMove );
+        // var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        // directionalLight.position.set( 0, 0, 0).normalize();
+        // scene.add( directionalLight );
+        // renderer.domElement.addEventListener('click', onClick, false);
+        // renderer.domElement.addEventListener( 'pointermove', onPointerMove );
 
         // 當視窗大小改變時
         window.addEventListener('resize', onWindowResize);
 
         // 三维控件
-        // const controls = new OrbitControls(camera, renderer.domElement);
-        // controls.target.set(0, 0, 0);
-        // controls.update();
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
+        controls.update();
 
         plane();
         cube();
         deviceorientation();
-        // sphere();
-        // cylinder();
+      
     }
 
     //创建一个平面
@@ -129,10 +152,10 @@
       // 创建一个圆形平面，半径20，圆周方向细分数30
       var plane = new THREE.CircleGeometry(20,30)
       var material = new THREE.MeshPhongMaterial({
-            color: 0x999999,
+            color: 0x999999,// 0x999999
             // 矩形平面网格模型默认单面显示，可以设置side属性值为THREE.DoubleSide双面显示
             side: THREE.DoubleSide,
-            // visible: false
+            // visible: true
         });
         var mesh = new THREE.Mesh(plane, material);
         mesh.name=`plane`
@@ -179,41 +202,37 @@
 
     let GLTFobjects=[]//模型對象
     let result=[]//隨機數字不重複
-    //  创建一个立方体
+
+    //  创建一个模型
 
     function cube(){
         for(var i=0;i<3;i++){
-            var cubeGeo = new THREE.CubeGeometry(10, 10, 10, 1, 1, 1);//创建立方体
-            var cubeMat = new THREE.MeshLambertMaterial({//创建材料
-                color: Math.random() * 0xffffff,
-                wireframe:false,
-            });
-            
-            // // 立方体
-            // const randomPositons=[
-            //     Math.floor(Math.random() * 10+18),
-            //     Math.floor(Math.random() * -10-18),
-            // ]
-   
-            // var cubeMesh = new THREE.Mesh(cubeGeo, cubeMat);//创建立方体网格模型
-            // cubeMesh.position.set(randomPositons[Math.floor(Math.random() *2)],  0,randomPositons[Math.floor(Math.random() *2)]);//设置立方体的坐标  x z
-            // cubeMesh.name=`cube${i+1}`//設置模型名稱
-            // scene.add(cubeMesh);//将立方体添加到场景中
 
             const position=[]
             for(let k=0;k<2;k++){
                 const positionIndex= Math.floor(Math.random() * 4)
                 position.push(random(positionIndex,10,27))
             }
-    
-           // gltf文件 
-            GLTFloader.load('scene.gltf', function (gltf) {
+            const loader = new GLTFLoader();// models\girl\scene.gltf models/rabbit/rabbit.glb
+            loader.load('models/rabbit/rabbit.glb', function (gltf) {
+            // GLTFloader.load('scene.gltf', function (gltf) {
                     // 设置模型缩放比例
-                    gltf.scene.scale.set(0.05, 0.05, 0.05);
+                    gltf.scene.scale.set(0.5,100,100);
+                    // gltf.scene.scale.set(0.1,0.1,0.1);
                     // 相对X轴旋转弧度(为了让模型加载为合适的姿势)
-                    gltf.scene.position.set(position[0],0, position[1])
+                    gltf.scene.position.set(0,0, 0)
+                    // gltf.scene.position.set(position[0],0, position[1])
                     // gltf.scene.rotation.x = -0.5 * Math.PI; // 旋转
+
+
+                    mixer = new THREE.AnimationMixer(gltf.scene);
+                    console.log(gltf.animations)
+                    const action = mixer.clipAction(gltf.animations[0]);
+                    action.play();
+
+               
                     gltf.scene.lookAt(new THREE.Vector3(0, 0, 0))//模型看向中心
+
                     let value = Math.floor(Math.random() * 3)
                     while (checkInArr(result,value)) {
                         value = Math.floor(Math.random() * 3)
@@ -233,32 +252,6 @@
         }
     }
   
-    //创建一个球
-    function sphere(){
-        var sphereGeo = new THREE.SphereGeometry(16, 40, 40);//创建球体
-        var sphereMat = new THREE.MeshLambertMaterial({//创建材料
-            color:0x0000FF,
-            wireframe:false
-        });
-        var sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);//创建球体网格模型
-        sphereMesh.position.set(-25, 10, 0);//设置球的坐标
-        scene.add(sphereMesh);//将球体添加到场景
-    }
-
-    //创建圆柱体
-    function cylinder(){
-        //创建圆柱体
-        var cylinderGeo = new THREE.CylinderGeometry(15, 15 ,40 ,40 ,40);
-        var cylinderMat = new THREE.MeshLambertMaterial({//创建材料
-            color:0xFF6600,
-            wireframe:false
-        });
-        //创建圆柱体网格模型
-        var cylinderMesh = new THREE.Mesh(cylinderGeo, cylinderMat);
-        cylinderMesh.position.set(0, 20, -40);//设置圆柱坐标
-        scene.add(cylinderMesh);//向场景添加圆柱体
-    }
-    
     //渲染
     function render(){
         renderer.render(scene, camera);
@@ -347,12 +340,9 @@
 
     // 陀螺仪事件
     function deviceorientation(){
-        // const controls = DeviceOrientationControls(camera);
-        // controls.connect();
-        // controls.update();
-        window.addEventListener('deviceorientation', function(event) {
-           console.log(event.alpha + ' : ' + event.beta + ' : ' + event.gamma);
-        });
+    //   const controls = new DeviceOrientationControls(camera);
+    //   controls.connect();
+    //   controls.update();
     }
     
 </script>
