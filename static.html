@@ -167,15 +167,6 @@
         scene.add( gridHelper );
     }
 
-    // 检查数组内是否重复
-    function checkInArr(arr,rnd){
-        for(var i = 0; i < arr.length; i++){
-            if(rnd === arr[i]){
-                return true;
-            }
-        }
-        return false;
-    }
 
     function random(state,value,min) {
         switch(state){
@@ -200,19 +191,22 @@
     }
 
     let GLTFobjects=[]//模型對象
-    let result=[]//隨機數字不重複
 
     //  创建一个模型
 
     function cube(){
+        let currentNum=0
         for(var i=0;i<3;i++){
             const position=[]
+            // x z轴值
             for(let k=0;k<2;k++){
                 const positionIndex= Math.floor(Math.random() * 4)
                 position.push(random(positionIndex,10,27))
             }
+            // 加载模型
             const loader = new GLTFLoader();
             loader.load('models/Voxel_RabbitB.glb', function (gltf) {
+                    currentNum++
                     // 设置模型缩放比例
                     gltf.scene.scale.set(100,100,100);
                     gltf.scene.position.set(position[0],0, position[1])
@@ -220,15 +214,9 @@
                     // 为了让模型加载为合适的姿势
                     gltf.scene.rotation.y = -0.5 * Math.PI; 
 
-                    let value = Math.floor(Math.random() * 3)
-                    while (checkInArr(result,value)) {
-                        value = Math.floor(Math.random() * 3)
-                    }
-                    result.push(value)
-
                     gltf.scene.traverse( function ( child ) {
                         // console.log("加載模型",`cube${value}`)
-                        child.name=`cube${value}`
+                        child.name=`cube${currentNum}`// 根据名字进行删除
                         if(child.type === "Group") {
                             GLTFobjects.push(child);
                             mixer = new THREE.AnimationMixer(gltf.scene);
@@ -289,7 +277,6 @@
         }
         if(num>=3){
             // console.log("重新開始")
-            result=[]
             GLTFobjects=[]
             cube();//重新創建對象
             // console.log("創建模型後")
