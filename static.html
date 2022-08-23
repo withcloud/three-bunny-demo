@@ -19,19 +19,17 @@
     <p id="score" style="border: 1px solid black; padding: 5px;">分数：0</p>
   </div>
 
-<!-- jquery -->
 <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
-<!-- Orientation Controls -->
-<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/controls/DeviceOrientationControls.js"></script> 
 
 <script type="module">
   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
-  // import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
+  import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
   import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
   import { CinematicCamera } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/cameras/CinematicCamera.js';
-  // import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
-  // import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
+  //import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
+  import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
   import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
+
 
     var camera, scene, renderer,raycaster,container,stats,number;
     var score=0,seconds=30;
@@ -39,25 +37,6 @@
     let num = 0;
     const mouse = new THREE.Vector2();
 	let INTERSECTED;//當前點擊對象
-
-    // 看四周
-    var fov = 70,
-    texture_placeholder,
-    isUserInteracting = false,
-    onMouseDownMouseX = 0,
-    onMouseDownMouseY = 0,
-    lon = 0,
-    onMouseDownLon = 0,
-    lat = 0,
-    onMouseDownLat = 0,
-    phi = 0,
-    dist = 0,
-    theta = 0,
-    sceneDepth = 500;
-    var target = new THREE.Vector3();
-    target.x = 500 * Math.sin(phi) * Math.cos(theta);
-    target.y = 500 * Math.cos(phi);
-    target.z = 500 * Math.sin(phi) * Math.sin(theta);
 
     const GLTFloader = new GLTFLoader().setPath('models/girl/');
     main();
@@ -130,19 +109,10 @@
         // 當視窗大小改變時
         window.addEventListener('resize', onWindowResize);
 
-        // 看四周
-        document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-
-        // 轨道控制器（需要注釋掉，避免影響相機）
+        // 三维控件
         // const controls = new OrbitControls(camera, renderer.domElement);
         // controls.target.set(0, 0, 0);
         // controls.update();
-
-        // 手机方向控制器
-        const controls = new DeviceOrientationControls(camera);
-        controls.update();
 
         plane();
         cube();
@@ -370,6 +340,7 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+    
 </script>
 </body>
 </html>
