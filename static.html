@@ -13,13 +13,27 @@
     </style>
 </head>
 <body >
+    <div id="three" style="position: relative; z-index: 100">
+        <button
+          id="start_demo"
+          style="
+            height: 100px;
+            width: 100px;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.3);
+            position: absolute;
+            color: white;
+          "
+        >
+          Action
+          <div id="demo_x"></div>
+          <div id="demo_z"></div>
+          <div id="demo_y"></div>
+        </button>
+      </div>
   <div style="font-size: 30px; position: fixed; right: 2vw; ">
     <p id="seconds" style="border: 1px solid black; padding: 5px;">秒数：30</p>
     <p id="score" style="border: 1px solid black; padding: 5px;">分数：0</p>
-   
-    <p id="alpha" style="border: 1px solid black; padding: 5px;">0</p>
-    <p id="beta" style="border: 1px solid black; padding: 5px;">0</p>
-    <p id="device" style="border: 1px solid black; padding: 5px;">0</p>
   </div>
 
 <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
@@ -39,27 +53,27 @@
 </script>
 
 
-<!-- "three": "https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js" -->
+<!-- 143版本 124版本 -->
 <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.143.0/build/three.module.js"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.module.js"
       }
     }
 </script>
 
 <script type="module">
     import * as THREE from "three";
-
     //   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
-    import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
-    import Stats from 'https://cdn.jsdelivr.net/npm/three@0.143/examples/jsm/libs/stats.module.js';
+    // import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
+    import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
     // import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
     import { DeviceOrientationControls } from "./js/controls/DeviceOrientationControls.js";
     import { OrbitControls } from "./js/controls/OrbitControls.js";
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.143.0/examples/jsm/loaders/GLTFLoader.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.124.0/examples/jsm/loaders/GLTFLoader.js';
 
     var camera, scene, renderer,raycaster,container,stats,number;
+    var controls;
     var score=0,seconds=30;
     var pointer;
     let num = 0;
@@ -70,6 +84,8 @@
     const clock = new THREE.Clock();
     // mixer 和動畫有關
     let mixer1,mixer2,mixer3;
+
+
     
     main();
     // render();
@@ -94,14 +110,15 @@
         document.body.appendChild(container);
 
         stats = new Stats();
-	    document.body.appendChild( stats.dom );
+	    // document.body.appendChild( stats.dom );
 
         scene = new THREE.Scene();//创建一个新场景0xf0f0f0
         scene.background = new THREE.Color(0xf0f0f0);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
-        camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight, 1, 500);
-        camera.position.set(0, 50, 100);//设置相机位置
+        camera = new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight, 1, 300);
+        camera.position.set(0, 100, 0);//设置相机位置
+        
         
         // 渲染
         // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
@@ -137,14 +154,16 @@
         // 當視窗大小改變時
         window.addEventListener('resize', onWindowResize);
 
-        // 三维控件
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 0, 0);
-        controls.update();
+        // 陀螺仪控制器
+        controls = new DeviceOrientationControls(camera);
+        controls.connect();
+       
+        // const controls = new OrbitControls(camera, renderer.domElement);
+        // controls.target.set(0, 0, 0);
+        // controls.update();
 
         plane();
         cube();
-        deviceorientation();
     }
 
     //创建一个平面
@@ -209,9 +228,8 @@
             loader.load('models/Voxel_RabbitB.glb', function (gltf) {
                     currentNum++
                     // 设置模型缩放比例
-                    gltf.scene.scale.set(100,100,100);
+                    gltf.scene.scale.set(30,30,30);
                     gltf.scene.position.set(position[0],0, position[1])
-                    
     
                     // 为了让模型加载为合适的姿势
                     gltf.scene.rotation.y =  Math.PI; 
@@ -309,6 +327,7 @@
         if (mixer2) mixer2.update(delta);
         if (mixer3) mixer3.update(delta);
         render();
+        controls.update();
         stats.update();
     }
 
@@ -330,22 +349,14 @@
 		renderer.content = null;
      }
 
-
    // 改變視窗大小需要重新調整 camera 和 renderer
    function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+  
 
-    // 陀螺仪事件
-    function deviceorientation(){
-    //   const controls = new DeviceOrientationControls(camera);
-    //   controls.connect();
-    //   controls.update();
-    }
-    
 </script>
-
 </body>
 </html>
