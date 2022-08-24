@@ -103,13 +103,29 @@
             seconds -= 1;
             $("#seconds").text(`秒數：${seconds||0}`)
             if (seconds <= 0) {
-                score=0
-                seconds=30
-                    $("#seconds").text(`秒數：${seconds}`)
-                    $("#score").text(`分數：${score}`)
-                    clearInterval( window.timer)
-                    timers();
-                }
+                $("#seconds").text(`秒數：${seconds}`)
+                $("#score").text(`分數：${score}`)
+                clearInterval( window.timer)
+                timers();//重新算分
+                
+                // scene.traverse((child) => {
+                // if(child.type=="Group"){
+                //     console.log(child)
+                //     // scene.remove(child)
+                // }
+                // if (child.material) {
+                //     child.material.dispose();
+                // }
+                // child = null;
+                // });
+
+                // // 时间到了重新开始
+                // const group = new THREE.Group()
+               
+                // GLTFobjects=[]//装的对象重置
+                // num=0//移除三个的数量控制重新开始
+                // cube();
+            }
         }, 1000);
      }
 
@@ -315,9 +331,6 @@
             scene.traverse((child) => {
             if (child.material) {
                 child.material.dispose();
-            }
-            if (child.geometry) {
-                child.geometry.dispose();
             }
             child = null;
             });
