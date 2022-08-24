@@ -17,14 +17,26 @@
             margin: 0px;
             overflow: hidden;
         }
+
+        #score,#seconds {
+            width: 4rem;
+            font-size: medium;
+            border-radius: 0.2rem;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            padding-left: 0.5rem;
+            margin-top: 0.3rem;
+        }
     </style>
 </head>
 <body style="margin: 0; overflow: hidden">
    <div id="three" style="position: relative; z-index:100;">
-       <div style="font-size: 20px; position: fixed; right: 2vw;">
-            <p id="seconds" style="border: 1px solid black; padding: 5px;">秒数：30</p>
-            <p id="score" style="border: 1px solid black; padding: 5px;">分数：0</p>
-        </div>
+    <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
+        <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
+        <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
+      </div>
+    </div>
   </div>
 
   <video src="" style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "> </video>
@@ -67,7 +79,8 @@
 
     var camera, scene, renderer,raycaster,container,stats,number;
     var controls;
-    var score=0,seconds=30;
+    var score,seconds;
+    
     var pointer;
     let num = 0;
     const mouse = new THREE.Vector2();
@@ -81,18 +94,24 @@
     main();
     // render();
     animate();
-
-    window.timer =  setInterval(() => {
-        seconds -= 1;
-        $("#seconds").text(`秒数：${seconds||0}`)
-        if (seconds <= 0) {
-            score=0
-            seconds=30
-            $("#seconds").text(`秒数：${seconds}`)
-            $("#score").text(`分数：${score}`)
-            clearInterval( window.timer)
-        }
-    }, 1000);
+  
+    // 倒计时计分
+    function timers(){
+        seconds=30
+        score=0
+        window.timer =  setInterval(() => {
+            seconds -= 1;
+            $("#seconds").text(`秒數：${seconds||0}`)
+            if (seconds <= 0) {
+                score=0
+                seconds=30
+                    $("#seconds").text(`秒數：${seconds}`)
+                    $("#score").text(`分數：${score}`)
+                    clearInterval( window.timer)
+                    timers();
+                }
+        }, 1000);
+     }
 
     //主函数
     function main(){
@@ -155,11 +174,14 @@
 
         plane();
         cube();
+        timers();//定时器
+        
+
     }
 
     //创建一个平面
     function plane(){
-      // 创建一个圆形平面，半径20，圆周方向细分数30
+      // 创建一个圆形平面，半径20，圆周方向细分數30
       var plane = new THREE.CircleGeometry(20,30)
       var material = new THREE.MeshPhongMaterial({
             color: 0x999999,// 0x999999
@@ -287,7 +309,7 @@
         const gltfIndex=GLTFobjects.findIndex(gltf=>gltf.name==object.name)
         if(gltfIndex!=-1){
             score++
-            $("#score").text(`分数：${score||0}`)
+            $("#score").text(`分數：${score||0}`)
             num++;
             scene.remove(GLTFobjects[gltfIndex]);
             scene.traverse((child) => {
@@ -300,6 +322,7 @@
             child = null;
             });
         }
+        // 点击了三个对象后重置对象
         if(num>=3){
             // console.log("重新開始")
             GLTFobjects=[]
