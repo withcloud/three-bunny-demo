@@ -61,7 +61,7 @@ obj模型确实是会有位置属性的bug，所以在以后我们的开发中�
 控制器只兼容含有陀螺仪的移动端
 
 ## 陀螺儀功能實現流程
-html5的陀螺仪：https://blog.csdn.net/qq_30100043/article/details/73323617
+html5的陀螺仪(手机旋转方式)：https://blog.csdn.net/qq_30100043/article/details/73323617
 允許手机訪問陀螺儀
 获取陀螺仪坐标
 时刻更新坐标

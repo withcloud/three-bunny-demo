@@ -46,14 +46,13 @@ function DeviceOrientationControls(object) {
   const setObjectQuaternion = function () {
     const zee = new THREE.Vector3(0, 0, 0);
     const euler = new THREE.Euler();
-    const q0 = new THREE.Quaternion(0, 0, 0, 0);
+    const q0 = new THREE.Quaternion();
     const q1 = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)); // - PI/2 around the x-axis
     return function (quaternion, alpha, beta, gamma, orient) {
-      euler.set(beta, alpha, gamma, 'YXZ'); // 'ZXY' for the device, but 'YXZ' for us
+      euler.set(beta, alpha, -gamma, 'YXZ'); // 'ZXY' for the device, but 'YXZ' for us
       quaternion.setFromEuler(euler); // orient the device 定位设备
       quaternion.multiply(q1); // camera looks out the back of the device, not the top 相机从设备的背面看，而不是顶部
-      quaternion.multiply(q0.setFromAxisAngle(zee, orient)); // adjust for screen orientation 调整屏幕方向
-      // quaternion.multiply(q0.setFromAxisAngle(new THREE.Vector3(0, 0, 0), Math.PI / 2)); // adjust for screen orientation 调整屏幕方向
+      quaternion.multiply(q0.setFromAxisAngle(zee, -orient)); // adjust for screen orientation 调整屏幕方向
     };
   }();
 

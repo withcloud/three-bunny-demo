@@ -119,6 +119,7 @@
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
         camera = new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight, 1, 300);
         camera.position.set(0, 1, 0);//设置相机位置
+        camera.rotation.set(0, 0, 0)
         
         // 渲染
         // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
