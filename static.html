@@ -92,7 +92,6 @@
     let mixer1,mixer2,mixer3;
     
     main();
-    // render();
     animate();
   
     // 倒计时计分
@@ -103,28 +102,22 @@
             seconds -= 1;
             $("#seconds").text(`秒數：${seconds||0}`)
             if (seconds <= 0) {
+                seconds=30
+                score=0
                 $("#seconds").text(`秒數：${seconds}`)
                 $("#score").text(`分數：${score}`)
+                // 清空定时器
                 clearInterval( window.timer)
+                // 重新开始计时
                 timers();//重新算分
-                
-                // scene.traverse((child) => {
-                // if(child.type=="Group"){
-                //     console.log(child)
-                //     // scene.remove(child)
-                // }
-                // if (child.material) {
-                //     child.material.dispose();
-                // }
-                // child = null;
-                // });
-
-                // // 时间到了重新开始
-                // const group = new THREE.Group()
-               
-                // GLTFobjects=[]//装的对象重置
-                // num=0//移除三个的数量控制重新开始
-                // cube();
+                // 移除重新开始前的对象(兔子)
+                GLTFobjects?.forEach(function(object) {
+                    scene.remove(object)
+                    // object.material.dispose();
+                });
+                GLTFobjects=[]//装的对象重置
+                num=0//重置移除三个的数量控制重新开始
+                cube();//重新产生对象（兔子）
             }
         }, 1000);
      }
