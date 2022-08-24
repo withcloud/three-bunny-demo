@@ -29,17 +29,17 @@ if (navigator.mediaDevices.getUserMedia === undefined) {
 
 const aspect = window.innerHeight / window.innerWidth;
 
-navigator.mediaDevices
-  .getUserMedia({
-    video: {
-      frameRate: { ideal: 30, max: 60 },
-      facingMode: { exact: "environment" },
-      height: { min: 320, ideal: 480, max: 800 },
-      width: { min: 320 * aspect, ideal: 480 * aspect, max: 800 * aspect },
-    },
-  })
+navigator.mediaDevices.getUserMedia({
+  video: {
+    frameRate: { ideal: 30, max: 60 },
+    facingMode: { exact: "environment" },
+    height: { min: 320, ideal: 480, max: 800 },
+    width: { min: 320 * aspect, ideal: 480 * aspect, max: 800 * aspect },
+  },
+})
   .then(function (stream) {
     var video = document.querySelector("video");
+
     video.setAttribute("playsinline", true);
 
     // 旧的浏览器可能没有 srcObject

@@ -63,7 +63,7 @@ obj模型确实是会有位置属性的bug，所以在以后我们的开发中�
 ## 陀螺儀功能實現流程
 html5的陀螺仪(手机旋转方式)：https://blog.csdn.net/qq_30100043/article/details/73323617
 陀螺仪四参数描述：https://w3c.github.io/deviceorientation/spec-source-orientation.html#deviceorientation
-陀螺仪内容封装：https://pchen66.github.io/panolens.js/docs/lib_controls_DeviceOrientationControls.js.html
+陀螺仪水平查看：https://github.com/mrdoob/three.js/issues/9047
 ```
 允許手机訪問陀螺儀
 获取陀螺仪坐标
