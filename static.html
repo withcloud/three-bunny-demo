@@ -170,6 +170,10 @@
         var ambientLight = new THREE.AmbientLight( 0x666666 );
         scene.add( ambientLight );
 
+        const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+        hemiLight.position.set( 0, 1, 0 );
+        scene.add( hemiLight );
+
         //平行光源
         // var directionalLight = new THREE.DirectionalLight( 0xffffff );
         // directionalLight.position.set( 0, 0, 0).normalize();
@@ -185,8 +189,13 @@
         controls.connect();
        
         // 轨迹控制器
-        // const controls = new OrbitControls(camera, renderer.domElement);
-        // controls.target.set(0, 0, 0);
+        // controls = new OrbitControls( camera, renderer.domElement );
+        // controls.addEventListener( 'change', render );
+        // controls.target.set( 0, 2, 0 );
+        // controls.maxPolarAngle = THREE.MathUtils.degToRad( 90 );//有這個不會進行翻轉
+        // controls.maxDistance = 80;
+        // controls.minDistance = 20;
+        // controls.enablePan = false;
         // controls.update();
 
         plane();
@@ -211,8 +220,8 @@
         scene.add(mesh);//将平面添加到场景中
   
         // 地板線條 
-        const gridHelper = new THREE.GridHelper( 100, 20 );
-        scene.add( gridHelper );
+        // const gridHelper = new THREE.GridHelper( 100, 20 );
+        // scene.add( gridHelper );
     }
 
 
