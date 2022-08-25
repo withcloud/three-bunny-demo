@@ -32,6 +32,19 @@
 </head>
 <body style="margin: 0; overflow: hidden">
    <div id="three" style="position: relative; z-index:100;">
+        <div
+        style="
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        justify-items: flex-start;
+        padding: 5px;
+        "
+    >
+        <div id="beta_x"></div>
+        <div id="gamma_y"></div>
+        <div id="alpha_z"></div>
+    </div>
     <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
         <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
         <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
@@ -145,6 +158,15 @@
         // camera.up.x = 1;//相机以哪个方向为上方
         // camera.up.y = 0;
         // camera.up.z = 0;
+
+        // var width = window.innerWidth; //窗口宽度
+        // var height = window.innerHeight; //窗口高度
+        // var k = width / height; //窗口宽高比
+        // var s = 150; //三维场景显示范围控制系数，系数越大，显示的范围越大
+        // //创建相机对象
+        // var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // camera.position.set(200, 300, 200); //设置相机位置
+        // camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
         
         // 本地坐标
         // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
@@ -155,8 +177,11 @@
         pointer = new THREE.Vector2();//二维向量
 
         //antialias:true增加抗锯齿效果 alpha: true 允许透明
-        renderer = new THREE.WebGLRenderer({antialias:true,alpha: true});
-        renderer.setClearColor( 0x000000, 0 );//透明颜色
+        renderer = new THREE.WebGLRenderer({
+            antialias:true,
+            alpha: true //是否可以设置背景色透明
+        });
+        renderer.setClearColor( 0x000000, 0 );  //设置canvas背景色(clearColor)和背景色透明度（clearAlpha）
         renderer.setSize(window.innerWidth, window.innerHeight);//设置窗口尺寸
         //将renderer关联到container，这个过程类似于获取canvas元素
         container.appendChild(renderer.domElement);
@@ -170,9 +195,10 @@
         var ambientLight = new THREE.AmbientLight( 0x666666 );
         scene.add( ambientLight );
 
-        const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-        hemiLight.position.set( 0, 1, 0 );
-        scene.add( hemiLight );
+        // 會影響平面圓
+        // const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+        // hemiLight.position.set( 0, 1, 0 );
+        // scene.add( hemiLight );
 
         //平行光源
         // var directionalLight = new THREE.DirectionalLight( 0xffffff );
@@ -187,7 +213,7 @@
         // 陀螺仪控制器
         controls = new DeviceOrientationControls(camera);
         controls.connect();
-       
+
         // 轨迹控制器
         // controls = new OrbitControls( camera, renderer.domElement );
         // controls.addEventListener( 'change', render );
@@ -219,9 +245,10 @@
 
         scene.add(mesh);//将平面添加到场景中
   
-        // 地板線條 
-        // const gridHelper = new THREE.GridHelper( 100, 20 );
-        // scene.add( gridHelper );
+        // 地板線條 window.innerWidth
+        const gridHelper = new THREE.GridHelper( 100, 20 );
+        // gridHelper.position.y = 5
+        scene.add( gridHelper );
     }
 
 

@@ -73,3 +73,7 @@ html5的陀螺仪(手机旋转方式)：https://blog.csdn.net/qq_30100043/articl
 1. 摄像机摄影内容整个往上移动不合适会变得奇怪
 2. 整个空间与摄像投影底部相持平
 ```
+
+## 空间坐标转为屏幕坐标
+空間坐標轉為熒幕坐標：https://blog.csdn.net/qq_41741576/article/details/101680765
+世界坐标转化为屏幕坐标：http://www.yanhuangxueyuan.com/Three.js_course/screen.html

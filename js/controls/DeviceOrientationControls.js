@@ -91,6 +91,9 @@ const DeviceOrientationControls = function (object) {
     var alpha = THREE.Math.degToRad(device.alpha); // Z
     var beta = THREE.Math.degToRad(device.beta); // X'
     var gamma = THREE.Math.degToRad(device.gamma); // Y''
+    $("#beta_x").text(beta)
+    $("#gamma_y").text(gamma)
+    $("#alpha_z").text(alpha)
 
     var orient = THREE.Math.degToRad(scope.screenOrientation); // O
 
