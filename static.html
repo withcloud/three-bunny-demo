@@ -132,13 +132,21 @@
 
         scene = new THREE.Scene();//创建一个新场景
         // scene.background = new THREE.Color(0xf0f0f0);//此场景设置需要移除会影响摄像背景
+       
+        // 正交相機
+        // camera = new THREE.OrthographicCamera(-2, 2, 1.5, -1.5, 1, 10);
+        // // 定義camera的位置
+        // camera.position.set(4, -3, 5);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
-        camera = new THREE.PerspectiveCamera(50,window.innerWidth/window.innerHeight, 1, 300);
+        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 300);
         camera.position.set(0, 5, 0);//设置相机位置
-        camera.rotation.set(0, 0, 0)
+        // camera.rotation.set(0, 0, 0)
+        // camera.up.x = 1;//相机以哪个方向为上方
+        // camera.up.y = 0;
+        // camera.up.z = 0;
         
-        // 渲染
+        // 本地坐标
         // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
         // // axes.rotation.y =-0.5 * Math.PI;
         // scene.add(axes);
@@ -184,8 +192,6 @@
         plane();
         cube();
         timers();//定时器
-        
-
     }
 
     //创建一个平面
@@ -204,6 +210,7 @@
 
         scene.add(mesh);//将平面添加到场景中
   
+        // 地板線條 
         const gridHelper = new THREE.GridHelper( 100, 20 );
         scene.add( gridHelper );
     }
