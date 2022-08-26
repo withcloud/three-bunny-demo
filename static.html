@@ -82,7 +82,7 @@
 
 <script type="module">
     import * as THREE from "three";
-    //   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+    // import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
     // import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
     import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
     // import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
@@ -152,12 +152,9 @@
         // camera.position.set(4, -3, 5);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
-        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 300);
-        camera.position.set(0, 5, 0);//设置相机位置
+        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 20000);
+        camera.position.set(0,19000, 0);//设置相机位置
         // camera.rotation.set(0, 0, 0)
-        // camera.up.x = 1;//相机以哪个方向为上方
-        // camera.up.y = 0;
-        // camera.up.z = 0;
 
         // var width = window.innerWidth; //窗口宽度
         // var height = window.innerHeight; //窗口高度
@@ -204,6 +201,7 @@
         // var directionalLight = new THREE.DirectionalLight( 0xffffff );
         // directionalLight.position.set( 0, 0, 0).normalize();
         // scene.add( directionalLight );
+        
         renderer.domElement.addEventListener('click', onClick, false);
         renderer.domElement.addEventListener( 'pointermove', onPointerMove );
 
@@ -232,7 +230,7 @@
     //创建一个平面
     function plane(){
       // 创建一个圆形平面，半径20，圆周方向细分數30
-      var plane = new THREE.CircleGeometry(20,30)
+      var plane = new THREE.CircleGeometry(2000,30)
       var material = new THREE.MeshPhongMaterial({
             color: 0x999999,// 0x999999
             // 矩形平面网格模型默认单面显示，可以设置side属性值为THREE.DoubleSide双面显示
@@ -246,7 +244,7 @@
         scene.add(mesh);//将平面添加到场景中
   
         // 地板線條 window.innerWidth
-        const gridHelper = new THREE.GridHelper( 100, 20 );
+        const gridHelper = new THREE.GridHelper( 5000, 20 );
         // gridHelper.position.y = 5
         scene.add( gridHelper );
     }
@@ -282,7 +280,7 @@
         let currentNum=0
          // 加载模型
         const loader = new GLTFLoader();
-        for(var i=0;i<3;i++){
+        // for(var i=0;i<3;i++){
             const position=[]
             // x z轴值
             for(let k=0;k<2;k++){
@@ -293,7 +291,7 @@
             loader.load('models/Voxel_RabbitB.glb', function (gltf) {
                     currentNum++
                     // 设置模型缩放比例
-                    gltf.scene.scale.set(50,50,50);
+                    gltf.scene.scale.set(5000,5000,5000);
                     gltf.scene.position.set(position[0],0, position[1])
     
                     // 为了让模型加载为合适的姿势
@@ -330,7 +328,7 @@
                 render();
             }
             );
-        }
+        // }
     }
   
     //渲染
@@ -420,5 +418,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 </script>
+    
 </body>
 </html>

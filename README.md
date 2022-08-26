@@ -65,15 +65,10 @@ html5的陀螺仪(手机旋转方式)：https://blog.csdn.net/qq_30100043/articl
 陀螺仪四参数描述：https://w3c.github.io/deviceorientation/spec-source-orientation.html#deviceorientation
 陀螺仪水平查看：https://github.com/mrdoob/three.js/issues/9047
 ```
+加入陀螺儀流程
 允許手机訪問陀螺儀
 获取陀螺仪坐标
 时刻更新坐标
 更新相机转动角度及偏移量
-相机摄影与threejs一样的地板
-1. 摄像机摄影内容整个往上移动不合适会变得奇怪
-2. 整个空间与摄像投影底部相持平
 ```
-
-## 空间坐标转为屏幕坐标
-空間坐標轉為熒幕坐標：https://blog.csdn.net/qq_41741576/article/details/101680765
-世界坐标转化为屏幕坐标：http://www.yanhuangxueyuan.com/Three.js_course/screen.html
+## 相机摄影与threejs一样的地板
