@@ -32,19 +32,6 @@
 </head>
 <body style="margin: 0; overflow: hidden">
    <div id="three" style="position: relative; z-index:100;">
-        <div
-        style="
-        background: transparent;
-        display: flex;
-        flex-direction: column;
-        justify-items: flex-start;
-        padding: 5px;
-        "
-    >
-        <div id="beta_x"></div>
-        <div id="gamma_y"></div>
-        <div id="alpha_z"></div>
-    </div>
     <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
         <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
         <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
@@ -82,7 +69,7 @@
 
 <script type="module">
     import * as THREE from "three";
-    // import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
+    //   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
     // import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
     import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
     // import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
@@ -152,18 +139,12 @@
         // camera.position.set(4, -3, 5);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
-        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 20000);
-        camera.position.set(0,19000, 0);//设置相机位置
+        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 100000);
+        camera.position.set(0, 50000, 0);//设置相机位置
         // camera.rotation.set(0, 0, 0)
-
-        // var width = window.innerWidth; //窗口宽度
-        // var height = window.innerHeight; //窗口高度
-        // var k = width / height; //窗口宽高比
-        // var s = 150; //三维场景显示范围控制系数，系数越大，显示的范围越大
-        // //创建相机对象
-        // var camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-        // camera.position.set(200, 300, 200); //设置相机位置
-        // camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+        // camera.up.x = 1;//相机以哪个方向为上方
+        // camera.up.y = 0;
+        // camera.up.z = 0;
         
         // 本地坐标
         // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
@@ -174,34 +155,25 @@
         pointer = new THREE.Vector2();//二维向量
 
         //antialias:true增加抗锯齿效果 alpha: true 允许透明
-        renderer = new THREE.WebGLRenderer({
-            antialias:true,
-            alpha: true //是否可以设置背景色透明
-        });
-        renderer.setClearColor( 0x000000, 0 );  //设置canvas背景色(clearColor)和背景色透明度（clearAlpha）
+        renderer = new THREE.WebGLRenderer({antialias:true,alpha: true});
+        renderer.setClearColor( 0x000000, 0 );//透明颜色
         renderer.setSize(window.innerWidth, window.innerHeight);//设置窗口尺寸
         //将renderer关联到container，这个过程类似于获取canvas元素
         container.appendChild(renderer.domElement);
       
         //给场景添加光源(会影响兔兔颜色)
         var light= new THREE.PointLight(0xffffff);
-        light.position.set(100,100,100);
+        light.position.set(0,50000,0);
         scene.add(light);  
 
         // 自然光(会影响兔兔颜色)
         var ambientLight = new THREE.AmbientLight( 0x666666 );
         scene.add( ambientLight );
 
-        // 會影響平面圓
-        // const hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-        // hemiLight.position.set( 0, 1, 0 );
-        // scene.add( hemiLight );
-
         //平行光源
         // var directionalLight = new THREE.DirectionalLight( 0xffffff );
         // directionalLight.position.set( 0, 0, 0).normalize();
         // scene.add( directionalLight );
-        
         renderer.domElement.addEventListener('click', onClick, false);
         renderer.domElement.addEventListener( 'pointermove', onPointerMove );
 
@@ -211,15 +183,10 @@
         // 陀螺仪控制器
         controls = new DeviceOrientationControls(camera);
         controls.connect();
-
+       
         // 轨迹控制器
-        // controls = new OrbitControls( camera, renderer.domElement );
-        // controls.addEventListener( 'change', render );
-        // controls.target.set( 0, 2, 0 );
-        // controls.maxPolarAngle = THREE.MathUtils.degToRad( 90 );//有這個不會進行翻轉
-        // controls.maxDistance = 80;
-        // controls.minDistance = 20;
-        // controls.enablePan = false;
+        // const controls = new OrbitControls(camera, renderer.domElement);
+        // controls.target.set(0, 0, 0);
         // controls.update();
 
         plane();
@@ -230,7 +197,7 @@
     //创建一个平面
     function plane(){
       // 创建一个圆形平面，半径20，圆周方向细分數30
-      var plane = new THREE.CircleGeometry(2000,30)
+      var plane = new THREE.CircleGeometry(10000,30)
       var material = new THREE.MeshPhongMaterial({
             color: 0x999999,// 0x999999
             // 矩形平面网格模型默认单面显示，可以设置side属性值为THREE.DoubleSide双面显示
@@ -243,9 +210,8 @@
 
         scene.add(mesh);//将平面添加到场景中
   
-        // 地板線條 window.innerWidth
-        const gridHelper = new THREE.GridHelper( 5000, 20 );
-        // gridHelper.position.y = 5
+        // 地板線條 
+        const gridHelper = new THREE.GridHelper( 50000, 20 );
         scene.add( gridHelper );
     }
 
@@ -280,18 +246,18 @@
         let currentNum=0
          // 加载模型
         const loader = new GLTFLoader();
-        // for(var i=0;i<3;i++){
+        for(var i=0;i<3;i++){
             const position=[]
             // x z轴值
             for(let k=0;k<2;k++){
                 const positionIndex= Math.floor(Math.random() * 4)
-                position.push(random(positionIndex,10,27))
+                position.push(random(positionIndex,2000,10000+10000))//第二位參數
             }
             // loader.load('models/girl/scene.gltf', function (gltf) {
             loader.load('models/Voxel_RabbitB.glb', function (gltf) {
                     currentNum++
                     // 设置模型缩放比例
-                    gltf.scene.scale.set(5000,5000,5000);
+                    gltf.scene.scale.set(50000,50000,50000);
                     gltf.scene.position.set(position[0],0, position[1])
     
                     // 为了让模型加载为合适的姿势
@@ -328,7 +294,7 @@
                 render();
             }
             );
-        // }
+        }
     }
   
     //渲染
@@ -418,6 +384,5 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 </script>
-    
 </body>
 </html>
