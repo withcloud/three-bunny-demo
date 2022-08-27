@@ -139,7 +139,7 @@
         // camera.position.set(4, -3, 5);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
-        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 100000);
+        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 200000);
         camera.position.set(0, 50000, 0);//设置相机位置
         // camera.rotation.set(0, 0, 0)
         // camera.up.x = 1;//相机以哪个方向为上方
@@ -251,13 +251,13 @@
             // x z轴值
             for(let k=0;k<2;k++){
                 const positionIndex= Math.floor(Math.random() * 4)
-                position.push(random(positionIndex,2000,10000+10000))//第二位參數
+                position.push(random(positionIndex,80000,10000+15000))//第二位參數
             }
             // loader.load('models/girl/scene.gltf', function (gltf) {
             loader.load('models/Voxel_RabbitB.glb', function (gltf) {
                     currentNum++
                     // 设置模型缩放比例
-                    gltf.scene.scale.set(50000,50000,50000);
+                    gltf.scene.scale.set(80000,80000,80000);
                     gltf.scene.position.set(position[0],0, position[1])
     
                     // 为了让模型加载为合适的姿势
