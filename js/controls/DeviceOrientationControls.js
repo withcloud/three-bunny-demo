@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "../../build/three.module.js";
 const DeviceOrientationControls = function (object) {
 
   var scope = this;

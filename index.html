@@ -39,7 +39,7 @@
     </div>
   </div>
 
-  <video src="" style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "> </video>
+  <video style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "/>
   
   <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
   <script src="./js/camera.js"></script>
@@ -62,20 +62,17 @@
 <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.module.js"
+        "three": "./build/three.module.js"
       }
     }
 </script>
 
 <script type="module">
-    import * as THREE from "three";
-    //   import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124/build/three.module.js';
-    // import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/dat.gui.module.js';
-    import Stats from 'https://cdn.jsdelivr.net/npm/three@0.124/examples/jsm/libs/stats.module.js';
-    // import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.121.1/examples/jsm/loaders/GLTFLoader.js";
+    import * as THREE from "./build/three.module.js";
+    import Stats from './js/stats.module.js';
     import { DeviceOrientationControls } from "./js/controls/DeviceOrientationControls.js";
     import { OrbitControls } from "./js/controls/OrbitControls.js";
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.124.0/examples/jsm/loaders/GLTFLoader.js';
+    import { GLTFLoader } from './js/loaders/GLTFLoader.js';
 
     var camera, scene, renderer,raycaster,container,stats,number;
     var controls;
