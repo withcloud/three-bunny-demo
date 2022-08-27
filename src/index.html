@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+      id="viewport"
+      name="viewport"
+    />
+    <title>threejs-Voxel_RabbitB</title>
+    
+    <style>
+        body{
+            font-family: Monospace;
+            /* background: #f0f0f0; */
+            margin: 0px;
+            overflow: hidden;
+        }
+
+        #score,#seconds {
+            width: 4rem;
+            font-size: medium;
+            border-radius: 0.2rem;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            padding-left: 0.5rem;
+            margin-top: 0.3rem;
+        }
+    </style>
+      <!-- <script  type="text/javascript"  src="./js/jquery-2.0.2.min.js"></script> -->
+      <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+      <script  src="./js/camera.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden">
+   <div id="three" style="position: relative; z-index:100;">
+    <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
+        <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
+        <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
+      </div>
+    </div>
+  </div>
+
+  <video style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "/>
+  
+
+
+<!-- 禁止縮放 -->  
+<script>
+    document.addEventListener(
+      "touchmove",
+      function (event) {
+        if (event.scale !== 1) {
+          event.preventDefault();
+        }
+      },
+      { passive: false }
+    );
+</script>
+
+
+<!-- 143版本 124版本 -->
+<script  type="importmap">
+    {
+      "imports": {
+        "three": "./build/three.module.js"
+      }
+    }
+</script>
+
+<script  type="module">
+    import * as THREE from "./build/three.module.js";
+    import Stats from './js/stats.module.js';
+    import { DeviceOrientationControls } from "./js/controls/DeviceOrientationControls.js";
+    import { OrbitControls } from "./js/controls/OrbitControls.js";
+    import { GLTFLoader } from './js/loaders/GLTFLoader.js';
+
+    var camera, scene, renderer,raycaster,container,stats,number;
+    var controls;
+    var score,seconds;
+    
+    var pointer;
+    let num = 0;
+    const mouse = new THREE.Vector2();
+	let INTERSECTED;//當前點擊對象
+
+    // clock 和動畫有關
+    const clock = new THREE.Clock();
+    // mixer 和動畫有關
+    let mixer1,mixer2,mixer3;
+    
+    main();
+    animate();
+  
+    // 倒计时计分
+    function timers(){
+        seconds=30
+        score=0
+        window.timer =  setInterval(() => {
+            seconds -= 1;
+            $("#seconds").text(`秒數：${seconds||0}`)
+            if (seconds <= 0) {
+                seconds=30
+                score=0
+                $("#seconds").text(`秒數：${seconds}`)
+                $("#score").text(`分數：${score}`)
+                // 清空定时器
+                clearInterval( window.timer)
+                // 重新开始计时
+                timers();//重新算分
+                // 移除重新开始前的对象(兔子)
+                GLTFobjects?.forEach(function(object) {
+                    scene.remove(object)
+                    // object.material.dispose();
+                });
+                GLTFobjects=[]//装的对象重置
+                num=0//重置移除三个的数量控制重新开始
+                cube();//重新产生对象（兔子）
+            }
+        }, 1000);
+     }
+
+    //主函数
+    function main(){
+        //添加一个div元素
+        const container = document.getElementById("three");
+
+        stats = new Stats();
+	    // document.body.appendChild( stats.dom );
+
+        scene = new THREE.Scene();//创建一个新场景
+        // scene.background = new THREE.Color(0xf0f0f0);//此场景设置需要移除会影响摄像背景
+       
+        // 正交相機
+        // camera = new THREE.OrthographicCamera(-2, 2, 1.5, -1.5, 1, 10);
+        // // 定義camera的位置
+        // camera.position.set(4, -3, 5);
+
+        //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
+        camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 200000);
+        camera.position.set(0, 50000, 0);//设置相机位置
+        // camera.rotation.set(0, 0, 0)
+        // camera.up.x = 1;//相机以哪个方向为上方
+        // camera.up.y = 0;
+        // camera.up.z = 0;
+        
+        // 本地坐标
+        // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
+        // // axes.rotation.y =-0.5 * Math.PI;
+        // scene.add(axes);
+
+        raycaster = new THREE.Raycaster();//3d世界鼠標選中物體獲取器
+        pointer = new THREE.Vector2();//二维向量
+
+        //antialias:true增加抗锯齿效果 alpha: true 允许透明
+        renderer = new THREE.WebGLRenderer({antialias:true,alpha: true});
+        renderer.setClearColor( 0x000000, 0 );//透明颜色
+        renderer.setSize(window.innerWidth, window.innerHeight);//设置窗口尺寸
+        //将renderer关联到container，这个过程类似于获取canvas元素
+        container.appendChild(renderer.domElement);
+      
+        //给场景添加光源(会影响兔兔颜色)
+        var light= new THREE.PointLight(0xffffff);
+        light.position.set(0,50000,0);
+        scene.add(light);  
+
+        // 自然光(会影响兔兔颜色)
+        var ambientLight = new THREE.AmbientLight( 0x666666 );
+        scene.add( ambientLight );
+
+        //平行光源
+        // var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        // directionalLight.position.set( 0, 0, 0).normalize();
+        // scene.add( directionalLight );
+        renderer.domElement.addEventListener('click', onClick, false);
+        renderer.domElement.addEventListener( 'pointermove', onPointerMove );
+
+        // 當視窗大小改變時
+        window.addEventListener('resize', onWindowResize);
+
+        // 陀螺仪控制器
+        controls = new DeviceOrientationControls(camera);
+        controls.connect();
+       
+        // 轨迹控制器
+        // const controls = new OrbitControls(camera, renderer.domElement);
+        // controls.target.set(0, 0, 0);
+        // controls.update();
+
+        plane();
+        cube();
+        timers();//定时器
+    }
+
+    //创建一个平面
+    function plane(){
+      // 创建一个圆形平面，半径20，圆周方向细分數30
+      var plane = new THREE.CircleGeometry(10000,30)
+      var material = new THREE.MeshPhongMaterial({
+            color: 0x999999,// 0x999999
+            // 矩形平面网格模型默认单面显示，可以设置side属性值为THREE.DoubleSide双面显示
+            side: THREE.DoubleSide,
+            // visible: true
+        });
+        var mesh = new THREE.Mesh(plane, material);
+        mesh.name=`plane`
+        mesh.rotation.x = -0.5 * Math.PI;//将平面绕X轴逆时针旋转90度
+
+        scene.add(mesh);//将平面添加到场景中
+  
+        // 地板線條 
+        const gridHelper = new THREE.GridHelper( 50000, 20 );
+        scene.add( gridHelper );
+    }
+
+
+    function random(state,value,min) {
+        switch(state){
+            case 0: //x z
+            value=value
+            min=min
+            break;
+            case 1: //x -z 
+            value=value
+            min=-min
+            break;
+            case 2: // -x z
+            value=-value
+            min=min
+            break;
+            case 3: // -x -z
+            value=-value
+            min=-min
+            break;
+        }
+        return Math.floor(Math.random() * value+min);
+    }
+
+    let GLTFobjects=[]//模型對象
+
+    //  创建一个模型
+
+    function cube(){
+        let currentNum=0
+         // 加载模型
+        const loader = new GLTFLoader();
+        for(var i=0;i<3;i++){
+            const position=[]
+            // x z轴值
+            for(let k=0;k<2;k++){
+                const positionIndex= Math.floor(Math.random() * 4)
+                position.push(random(positionIndex,80000,10000+15000))//第二位參數
+            }
+            // loader.load('models/girl/scene.gltf', function (gltf) {
+            loader.load('Voxel_RabbitB.glb', function (gltf) {
+                    currentNum++
+                    // 设置模型缩放比例
+                    gltf.scene.scale.set(80000,80000,80000);
+                    gltf.scene.position.set(position[0],0, position[1])
+    
+                    // 为了让模型加载为合适的姿势
+                    gltf.scene.rotation.y =  Math.PI; 
+                   
+                    const mixer = new THREE.AnimationMixer(gltf.scene);
+                   
+                     //   三只动的图纸
+                    if(currentNum==1){
+                        const action = mixer.clipAction(gltf.animations[1]);
+                        action.play();
+                        mixer1=mixer
+                    }else if(currentNum==2){
+                        const action = mixer.clipAction(gltf.animations[2]);
+                        action.play();
+                        mixer2=mixer
+                    }else if(currentNum==3){
+                        const action = mixer.clipAction(gltf.animations[3]);
+                        action.play();
+                        mixer3=mixer
+                    }
+                
+                    gltf.scene.traverse( function ( child ) {
+                        //模型看向中心
+                        child.lookAt(new THREE.Vector3(0, 0, 0))
+                        // console.log("加載模型",`cube${value}`)
+                        child.name=`cube${currentNum}`// 根据名字进行删除
+                        if(child.type === "Group") {
+                            GLTFobjects.push(child);
+                        }
+                    });
+                                
+                scene.add(gltf.scene);
+                render();
+            }
+            );
+        }
+    }
+  
+    //渲染
+    function render(){
+        renderer.render(scene, camera);
+    }
+    
+    // 點擊事件
+    function onClick( event ) {
+        event.preventDefault();
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+        // 获取鼠标点击的3D模型
+        raycaster.setFromCamera( mouse, camera );
+        var intersects = raycaster.intersectObjects( scene.children, true );
+    
+        if ( intersects.length > 0 ) {
+             // 點擊到3D內容
+            const object = intersects[0].object;
+            removeEvent(object)
+        }
+    }
+
+    // 移除事件
+    function removeEvent(object){
+        // 點擊模型坐標
+        const gltfIndex=GLTFobjects.findIndex(gltf=>gltf.name==object.name)
+        if(gltfIndex!=-1){
+            score++
+            $("#score").text(`分數：${score||0}`)
+            num++;
+            scene.remove(GLTFobjects[gltfIndex]);
+            scene.traverse((child) => {
+            if (child.material) {
+                child.material.dispose();
+            }
+            child = null;
+            });
+        }
+        // 点击了三个对象后重置对象
+        if(num>=3){
+            // console.log("重新開始")
+            GLTFobjects=[]
+            cube();//重新創建對象
+            // console.log("創建模型後")
+            num=0
+        }
+    }
+
+    // 持续更新
+    function animate() {
+        requestAnimationFrame( animate, renderer.domElement );
+        let delta = clock.getDelta();
+        delta *= 0.5;
+        if (mixer1) mixer1.update(delta);
+        if (mixer2) mixer2.update(delta);
+        if (mixer3) mixer3.update(delta);
+        render();
+        controls.update();
+        stats.update();
+    }
+
+    // 鼠標經過事件
+    function onPointerMove(event) {
+        pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+        raycaster.setFromCamera( pointer, camera );
+        const intersects = raycaster.intersectObjects( scene.children, false );
+            if ( intersects.length > 0 ) {
+                const intersect = intersects[0];
+                render();
+            }
+     }
+
+    //  釋放空間
+     function destory(){
+        scene.clear();
+		renderer.dispose();
+		renderer.content = null;
+        controls.dispose(); 
+     }
+
+   // 改變視窗大小需要重新調整 camera 和 renderer
+   function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+</script>
+</body>
+</html>
