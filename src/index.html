@@ -335,16 +335,17 @@
                 allActions[gltfIndex][0].stop();//停止原理動畫
                 allActions[gltfIndex][1].play();//點擊後的動畫
                 animationToggleRemove(gltfIndex);
+                $("#score").text(num)
             }
         }
-        $("#score").text(emptyNums)
+       
         // 点击了三个对象后重置对象
-        if(num>=3){
+        if(num>=3&&emptyNums.length>=3){
             // console.log("重新開始")
             GLTFobjects=[]
             cube();//重新創建對象
             // console.log("創建模型後")
-            num++;
+            emptyNums=[]
             num=0
         }
     }
