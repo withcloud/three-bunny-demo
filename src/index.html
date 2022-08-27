@@ -115,6 +115,7 @@
                     // object.material.dispose();
                 });
                 GLTFobjects=[]//装的对象重置
+                allActions=[]//動畫對象重置
                 num=0//重置移除三个的数量控制重新开始
                 cube();//重新产生对象（兔子）
             }
@@ -237,10 +238,9 @@
         return Math.floor(Math.random() * value+min);
     }
 
-    let GLTFobjects=[]//模型對象
-
+    let GLTFobjects=[]//模型對象 用於刪除功能
+    let allActions=[]
     //  创建一个模型
-
     function cube(){
         let currentNum=0
          // 加载模型
@@ -261,23 +261,25 @@
     
                     // 为了让模型加载为合适的姿势
                     gltf.scene.rotation.y =  Math.PI; 
-                   
+
                     const mixer = new THREE.AnimationMixer(gltf.scene);
-                   
+     
+                     //   動畫類型  Walk、Run、Eat、Jump、Idle、Rest  
                      //   三只动的图纸
+                     let action
                     if(currentNum==1){
-                        const action = mixer.clipAction(gltf.animations[1]);
-                        action.play();
+                        action = mixer.clipAction(gltf.animations[0]);
                         mixer1=mixer
                     }else if(currentNum==2){
-                        const action = mixer.clipAction(gltf.animations[2]);
-                        action.play();
+                        action = mixer.clipAction(gltf.animations[0]);
                         mixer2=mixer
                     }else if(currentNum==3){
-                        const action = mixer.clipAction(gltf.animations[3]);
-                        action.play();
+                        action = mixer.clipAction(gltf.animations[0]);
                         mixer3=mixer
                     }
+                    action.play();
+                    const actionJump = mixer.clipAction(gltf.animations[3]);
+                    allActions.push([action,actionJump])
                 
                     gltf.scene.traverse( function ( child ) {
                         //模型看向中心
@@ -316,30 +318,33 @@
             const object = intersects[0].object;
             removeEvent(object)
         }
+      
     }
 
     // 移除事件
+    let emptyNums=[]
     function removeEvent(object){
         // 點擊模型坐標
         const gltfIndex=GLTFobjects.findIndex(gltf=>gltf.name==object.name)
         if(gltfIndex!=-1){
-            score++
-            $("#score").text(`分數：${score||0}`)
-            num++;
-            scene.remove(GLTFobjects[gltfIndex]);
-            scene.traverse((child) => {
-            if (child.material) {
-                child.material.dispose();
+            if(!emptyNums.includes(gltfIndex)){
+                emptyNums.push(gltfIndex)
+                score++
+                $("#score").text(`分數：${score||0}`)
+                num++;
+                allActions[gltfIndex][0].stop();//停止原理動畫
+                allActions[gltfIndex][1].play();//點擊後的動畫
+                animationToggleRemove(gltfIndex);
             }
-            child = null;
-            });
         }
+        $("#score").text(emptyNums)
         // 点击了三个对象后重置对象
         if(num>=3){
             // console.log("重新開始")
             GLTFobjects=[]
             cube();//重新創建對象
             // console.log("創建模型後")
+            num++;
             num=0
         }
     }
@@ -382,6 +387,27 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+
+    // 定時移除兔子
+    function animationToggleRemove(gltfIndex) {
+        let secondNum=1
+        window.gltfIndex =  setInterval(() => {
+            secondNum -= 1;
+            if(secondNum<=0){
+                // 移除點擊的兔子
+                scene.remove(GLTFobjects[gltfIndex]);  
+                scene.traverse((child) => {
+                if (child.material) {
+                    child.material.dispose();
+                }
+                child = null;
+                });
+                secondNum=1
+                clearInterval( window.gltfIndex)
+            }
+        },1000)
+    }
+
 </script>
 </body>
 </html>
