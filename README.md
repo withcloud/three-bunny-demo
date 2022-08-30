@@ -72,3 +72,63 @@ html5的陀螺仪(手机旋转方式)：https://blog.csdn.net/qq_30100043/articl
 更新相机转动角度及偏移量
 ```
 ## 相机摄影与threejs一样的地板
+
+第一種(加密流暢)
+{
+    compact: true,
+    controlFlowFlattening: false,
+    deadCodeInjection: false,
+    debugProtection: false,
+    debugProtectionInterval: 0,
+    disableConsoleOutput: true,
+    identifierNamesGenerator: 'hexadecimal',
+    log: false,
+    numbersToExpressions: false,
+    renameGlobals: false,
+    selfDefending: true,
+    simplify: true,
+    splitStrings: false,
+    stringArray: true,
+    stringArrayCallsTransform: false,
+    stringArrayEncoding: [],
+    stringArrayIndexShift: true,
+    stringArrayRotate: true,
+    stringArrayShuffle: true,
+    stringArrayWrappersCount: 1,
+    stringArrayWrappersChainedCalls: true,
+    stringArrayWrappersParametersMaxCount: 2,
+    stringArrayWrappersType: 'variable',
+    stringArrayThreshold: 0.75,
+    unicodeEscapeSequence: false
+}
+
+第2種(加密流暢) :
+
+{
+    compact: true,
+    controlFlowFlattening: false,
+    deadCodeInjection: false,
+    debugProtection: false,
+    debugProtectionInterval: 0,
+    disableConsoleOutput: false,
+    identifierNamesGenerator: 'hexadecimal',
+    log: false,
+    numbersToExpressions: false,
+    renameGlobals: false,
+    selfDefending: false,
+    simplify: true,
+    splitStrings: false,
+    stringArray: true,
+    stringArrayCallsTransform: false,
+    stringArrayCallsTransformThreshold: 0.5,
+    stringArrayEncoding: [],
+    stringArrayIndexShift: true,
+    stringArrayRotate: true,
+    stringArrayShuffle: true,
+    stringArrayWrappersCount: 1,
+    stringArrayWrappersChainedCalls: true,
+    stringArrayWrappersParametersMaxCount: 2,
+    stringArrayWrappersType: 'variable',
+    stringArrayThreshold: 0.75,
+    unicodeEscapeSequence: false
+}

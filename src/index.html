@@ -29,13 +29,15 @@
             margin-top: 0.3rem;
         }
     </style>
+      <!-- <script  type="text/javascript"  src="./js/jquery-2.0.2.min.js"></script> -->
+      <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
       <script  src="./js/camera.js"></script>
 </head>
 <body style="margin: 0; overflow: hidden">
    <div id="three" style="position: relative; z-index:100;">
     <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
-        <p  style="border: 1px solid black; padding: 5px;">秒數：<span id="seconds">30</span></p>
-        <p  style="border: 1px solid black; padding: 5px;">分數：<span id="score">0</span></p>
+        <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
+        <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
       </div>
     </div>
   </div>
@@ -83,13 +85,19 @@
     const mouse = new THREE.Vector2();
 	let INTERSECTED;//當前點擊對象
 
+
     // clock 和動畫有關
     const clock = new THREE.Clock();
     // mixer 和動畫有關
     let mixer1,mixer2,mixer3;
 
-    const secondsDom=document.getElementById('seconds')
-    const scoreDom=document.getElementById('score')
+    // 調試網絡
+    // function someMethodIThinkMightBeSlow() {
+    //     const startTime = performance.now();
+    //     // Do the normal stuff for this function
+    //     const duration = performance.now() - startTime;
+    //     console.log(`someMethodIThinkMightBeSlow took ${duration}ms`);
+    // }
     
     main();
     animate();
@@ -99,13 +107,13 @@
         seconds=30
         score=0
         window.timer =  setInterval(() => {
-            seconds -= 1
-            secondsDom.innerText= seconds||0
+            seconds -= 1;
+            $("#seconds").text(`秒數：${seconds||0}`)
             if (seconds <= 0) {
                 seconds=30
                 score=0
-                secondsDom.innerText=seconds
-                scoreDom.innerText=score
+                $("#seconds").text(`秒數：${seconds}`)
+                $("#score").text(`分數：${score}`)
                 // 清空定时器
                 clearInterval( window.timer)
                 // 重新开始计时
@@ -322,7 +330,7 @@
             if(!emptyNums.includes(gltfIndex)){
                 emptyNums.push(gltfIndex)
                 score++
-                scoreDom.innerText=score||0
+                $("#score").text(`分數：${score||0}`)
                 num++;
                 allActions[gltfIndex][0].stop();//停止原理動畫
                 allActions[gltfIndex][1].play();//點擊後的動畫
@@ -332,17 +340,18 @@
        
     }
 
-    // 持续更新
+    // 持续重繪
     function animate() {
-        requestAnimationFrame( animate, renderer.domElement );
-        let delta = clock.getDelta();
-        delta *= 0.5;
-        if (mixer1) mixer1.update(delta);
-        if (mixer2) mixer2.update(delta);
-        if (mixer3) mixer3.update(delta);
-        render();
-        controls.update();
-        stats.update();
+           requestAnimationFrame(animate);
+            //    requestAnimationFrame( animate, renderer.domElement );
+           renderer.render(scene, camera);
+           let delta = clock.getDelta();
+            delta *= 0.5;
+            if (mixer1) mixer1.update(delta);
+            if (mixer2) mixer2.update(delta);
+            if (mixer3) mixer3.update(delta);
+            controls.update();
+            stats.update();
     }
 
     // 鼠標經過事件
