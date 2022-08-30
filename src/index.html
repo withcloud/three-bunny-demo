@@ -118,6 +118,7 @@
                 allActions=[]//動畫對象重置
                 num=0//重置移除三个的数量控制重新开始
                 cube();//重新产生对象（兔子）
+                emptyNums=[]//清空重複點擊下下標集
             }
         }, 1000);
      }
@@ -126,17 +127,8 @@
     function main(){
         //添加一个div元素
         const container = document.getElementById("three");
-
         stats = new Stats();
-	    // document.body.appendChild( stats.dom );
-
         scene = new THREE.Scene();//创建一个新场景
-        // scene.background = new THREE.Color(0xf0f0f0);//此场景设置需要移除会影响摄像背景
-       
-        // 正交相機
-        // camera = new THREE.OrthographicCamera(-2, 2, 1.5, -1.5, 1, 10);
-        // // 定義camera的位置
-        // camera.position.set(4, -3, 5);
 
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
         camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 200000);
@@ -207,7 +199,6 @@
         var mesh = new THREE.Mesh(plane, material);
         mesh.name=`plane`
         mesh.rotation.x = -0.5 * Math.PI;//将平面绕X轴逆时针旋转90度
-
         scene.add(mesh);//将平面添加到场景中
   
         // 地板線條 
@@ -322,7 +313,7 @@
     }
 
     // 移除事件
-    let emptyNums=[]
+    let emptyNums=[]// 避免在跳的過程中重複點擊兔子，每次輪迴編號0,1,2
     function removeEvent(object){
         // 點擊模型坐標
         const gltfIndex=GLTFobjects.findIndex(gltf=>gltf.name==object.name)
@@ -335,19 +326,9 @@
                 allActions[gltfIndex][0].stop();//停止原理動畫
                 allActions[gltfIndex][1].play();//點擊後的動畫
                 animationToggleRemove(gltfIndex);
-                $("#score").text(num)
             }
         }
        
-        // 点击了三个对象后重置对象
-        if(num>=3&&emptyNums.length>=3){
-            // console.log("重新開始")
-            GLTFobjects=[]
-            cube();//重新創建對象
-            // console.log("創建模型後")
-            emptyNums=[]
-            num=0
-        }
     }
 
     // 持续更新
@@ -404,7 +385,16 @@
                 child = null;
                 });
                 secondNum=1
-                clearInterval( window.gltfIndex)
+                clearInterval(window.gltfIndex)
+
+               // 点击了三个对象后重置对象
+                if(num>=3){
+                    GLTFobjects=[]
+                    cube();//重新創建對象
+                    num=0
+                    emptyNums=[]//重複點擊下標集清空              
+                    allActions=[]//動畫對象重置
+                }
             }
         },1000)
     }
