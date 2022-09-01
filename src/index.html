@@ -336,6 +336,8 @@
                 num++;
                 allActions[gltfIndex][0].stop();//停止原理動畫
                 allActions[gltfIndex][1].play();//點擊後的動畫
+                // 兔子往上面y軸多一點
+                GLTFobjects[gltfIndex].position.y=10000
                 animationToggleRemove(gltfIndex);
             }
         }
@@ -388,6 +390,7 @@
         window.gltfIndex =  setInterval(() => {
             const audioElement = document.getElementById('rabbitMusic');
             audioElement.play();
+        
             secondNum -= 1;
             if(secondNum<=0){
                 // 移除點擊的兔子
