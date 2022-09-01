@@ -285,7 +285,7 @@
                 
                     gltf.scene.traverse( function ( child ) {
                         //模型看向中心
-                        child.lookAt(new THREE.Vector3(0, 0, 0))
+                        child.lookAt(camera.position)
                         // console.log("加載模型",`cube${value}`)
                         child.name=`cube${currentNum}`// 根据名字进行删除
                         if(child.type === "Group") {
