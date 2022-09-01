@@ -60,9 +60,10 @@ html5的陀螺仪(手机旋转方式)：https://blog.csdn.net/qq_30100043/articl
 ## 背景音樂及設置
 three語音模塊：https://www.w3xue.com/jsjq/threejs/threejs_audio.html
 
-## 相机摄影与threejs一样的地板
+## 鏡頭平移後保持方向
+https://mlog.club/article/1223169
 
-第一種(加密流暢)
+第一種(加密流暢)，stringArrayEncoding不能設置任何值
 {
     compact: true,
     controlFlowFlattening: false,
@@ -91,7 +92,7 @@ three語音模塊：https://www.w3xue.com/jsjq/threejs/threejs_audio.html
     unicodeEscapeSequence: false
 }
 
-第2種(加密流暢) :
+第2種(加密流暢) ，stringArrayEncoding不能設置任何值
 
 {
     compact: true,
