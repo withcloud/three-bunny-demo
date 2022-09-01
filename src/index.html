@@ -38,13 +38,15 @@
     <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
         <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
         <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
+        <button id="startButton" style="padding: 5px;width: 78px; border-radius: 10%;">背景音樂</button>
       </div>
     </div>
   </div>
 
   <video style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "/>
   
-
+  <audio id="backgroundMusic" loop  preload="auto" style="border: 1px solid black; padding: 5px; display: none" ><source src="14028.mp3" type="audio/mp3"> </audio>
+  <audio id="rabbitMusic" preload="auto" style="display: none">  <source src="14028.mp3" type="audio/mp3"> </audio>
 
 <!-- 禁止縮放 -->  
 <script>
@@ -58,7 +60,6 @@
       { passive: false }
     );
 </script>
-
 
 <!-- 143版本 124版本 -->
 <script  type="importmap">
@@ -91,7 +92,7 @@
     // mixer 和動畫有關
     let mixer1,mixer2,mixer3;
 
-    // 調試網絡
+    // 調試網絡速度
     // function someMethodIThinkMightBeSlow() {
     //     const startTime = performance.now();
     //     // Do the normal stuff for this function
@@ -192,7 +193,8 @@
 
         plane();
         cube();
-        timers();//定时器
+        timers();//30秒重新開始
+        backgroundMusic();//音樂
     }
 
     //创建一个平面
@@ -218,15 +220,15 @@
 
     function random(state,value,min) {
         switch(state){
-            case 0: //x z
+            case 0: //  x  z
             value=value
             min=min
             break;
-            case 1: //x -z 
+            case 1: //  x -z 
             value=value
             min=-min
             break;
-            case 2: // -x z
+            case 2: // -x  z
             value=-value
             min=min
             break;
@@ -407,6 +409,17 @@
                 }
             }
         },1000)
+    }
+
+    // 加載背景音樂(chrome允許點擊播放，自動播放需要滿足一些條件及設置)
+    function backgroundMusic(){
+        const startButton = document.getElementById('startButton');
+        startButton.addEventListener('click', function () {
+            const listener = new THREE.AudioListener();
+            camera.add(listener);
+            const audioElement = document.getElementById('backgroundMusic');
+            audioElement.play();
+        });
     }
 
 </script>
