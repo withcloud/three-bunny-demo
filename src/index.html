@@ -183,12 +183,12 @@
         window.addEventListener('resize', onWindowResize);
 
         // 陀螺仪控制器
-        controls = new DeviceOrientationControls(camera);
-        controls.connect();
+        // controls = new DeviceOrientationControls(camera);
+        // controls.connect();
        
         // 轨迹控制器
-        // const controls = new OrbitControls(camera, renderer.domElement);
-        // controls.target.set(0, 0, 0);
+         controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
         // controls.update();
 
         plane();
@@ -217,27 +217,8 @@
         scene.add( gridHelper );
     }
 
-
     function random(state,value,min) {
-        switch(state){
-            case 0: //  x  z
-            value=value
-            min=min
-            break;
-            case 1: //  x -z 
-            value=value
-            min=-min
-            break;
-            case 2: // -x  z
-            value=-value
-            min=min
-            break;
-            case 3: // -x -z
-            value=-value
-            min=-min
-            break;
-        }
-        return Math.floor(Math.random() * value+min);
+        return state==0?Math.floor(Math.random() * value)+min:-(Math.floor(Math.random() * value)+min);
     }
 
     let GLTFobjects=[]//模型對象 用於刪除功能
@@ -252,7 +233,7 @@
             // x z轴值
             for(let k=0;k<2;k++){
                 const positionIndex= Math.floor(Math.random() * 4)
-                position.push(random(positionIndex,80000,10000+50000))//第二位參數
+                position.push(random(positionIndex,80000,12000))//第二位參數
             }
             // loader.load('models/girl/scene.gltf', function (gltf) {
             loader.load('Voxel_RabbitB.glb', function (gltf) {
