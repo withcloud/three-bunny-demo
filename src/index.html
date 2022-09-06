@@ -183,12 +183,12 @@
         window.addEventListener('resize', onWindowResize);
 
         // 陀螺仪控制器
-        // controls = new DeviceOrientationControls(camera);
-        // controls.connect();
+        controls = new DeviceOrientationControls(camera);
+        controls.connect();
        
         // 轨迹控制器
-         controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 0, 0);
+        //  controls = new OrbitControls(camera, renderer.domElement);
+        // controls.target.set(0, 0, 0);
         // controls.update();
 
         plane();
