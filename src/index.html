@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
-      id="viewport"
-      name="viewport"
-    />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
     <title>threejs-Voxel_RabbitB</title>
     
     <style>
         body{
             font-family: Monospace;
-            /* background: #f0f0f0; */
-            margin: 0px;
+            margin:0;
+            padding:0;
             overflow: hidden;
         }
-
         #score,#seconds {
             width: 4rem;
             font-size: medium;
             border-radius: 0.2rem;
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
             border: none;
             padding-left: 0.5rem;
             margin-top: 0.3rem;
+        }
+
+        #score,#seconds, #startButton,#startMyButton{
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
         }
     </style>
       <!-- <script  type="text/javascript"  src="./js/jquery-2.0.2.min.js"></script> -->
       <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
       <script  src="./js/camera.js"></script>
 </head>
-<body style="margin: 0; overflow: hidden">
+<body>
    <div id="three" style="position: relative; z-index:100;">
     <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;  color: red;">
         <p id="seconds" style="border: 1px solid black; padding: 5px;">秒數：30</p>
         <p id="score" style="border: 1px solid black; padding: 5px;">分數：0</p>
         <button id="startButton" style="padding: 5px;width: 78px; border-radius: 10%;">背景音樂</button>
+        <button id="startMyButton"  style="padding: 5px;width: 78px; border-radius: 10%;">開啟權限</button>
       </div>
     </div>
   </div>
 
-  <video style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "/>
+  <video style="position: absolute; left: 0; top: 0; width: 100vw;  height: 100vh; z-index:-100; "/>
   
   <audio id="backgroundMusic" loop  preload="auto" style="border: 1px solid black; padding: 5px; display: none" ><source src="14028.mp3" type="audio/mp3"> </audio>
   <audio id="rabbitMusic" preload="auto" style="display: none">  <source src="14289.mp3" type="audio/mp3"> </audio>
@@ -143,15 +143,6 @@
         //添加一个透视相机   多少度视角，相机的宽高比，从距离相机多远的位置开始渲染，距离相机多远的位置截止渲染
         camera = new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight, 1, 200000);
         camera.position.set(0, 50000, 0);//设置相机位置
-        // camera.rotation.set(0, 0, 0)
-        // camera.up.x = 1;//相机以哪个方向为上方
-        // camera.up.y = 0;
-        // camera.up.z = 0;
-        
-        // 本地坐标
-        // var axes = new THREE.AxisHelper(100);//参数设置了三条轴线的长度
-        // // axes.rotation.y =-0.5 * Math.PI;
-        // scene.add(axes);
 
         raycaster = new THREE.Raycaster();//3d世界鼠標選中物體獲取器
         pointer = new THREE.Vector2();//二维向量
@@ -173,23 +164,22 @@
         scene.add( ambientLight );
 
         //平行光源
-        // var directionalLight = new THREE.DirectionalLight( 0xffffff );
-        // directionalLight.position.set( 0, 0, 0).normalize();
-        // scene.add( directionalLight );
+        var directionalLight = new THREE.DirectionalLight( 0xffffff );
+        directionalLight.position.set( 0, 0, 0).normalize();
+        scene.add( directionalLight );
         renderer.domElement.addEventListener('click', onClick, false);
         renderer.domElement.addEventListener( 'pointermove', onPointerMove );
 
         // 當視窗大小改變時
         window.addEventListener('resize', onWindowResize);
-
-        // 陀螺仪控制器
+ 
+       // 陀螺仪控制器
         controls = new DeviceOrientationControls(camera);
         controls.connect();
-       
+
         // 轨迹控制器
-        //  controls = new OrbitControls(camera, renderer.domElement);
+        // controls = new OrbitControls(camera, renderer.domElement);
         // controls.target.set(0, 0, 0);
-        // controls.update();
 
         plane();
         cube();
@@ -409,7 +399,41 @@
             audioElement.play();
         });
     }
+   
+    const startMyButton =document.getElementById('startMyButton')
+    startMyButton.onclick= async function(){
+        // feature detect
+        // if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        //     alert("有DeviceMotionEvent")
+        //    DeviceMotionEvent.requestPermission()
+        //     .then(permissionState => {
+        //         alert("permissionState",permissionState)
+        //         if (permissionState === 'granted') {
+        //          window.addEventListener('devicemotion', () => {});
+        //         }
+        //     })
+        //     .catch((err) => {console.log(err)});
+        // } else {
+        // // handle regular non iOS 13+ devices
+        //  controls.connect();
+        // }
 
+        // feature detect
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        //  alert("有DeviceOrientationEvent")
+         await  DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+                    // alert(permissionState)
+                    if (permissionState === 'granted') {
+                        window.addEventListener('deviceorientation', () => {});
+                    }
+                })
+            .catch((err) => {console.log(err)});
+        } else {
+        // handle regular non iOS 13+ devices
+        }
+       
+    }
 </script>
 </body>
 </html>
