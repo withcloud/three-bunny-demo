@@ -122,3 +122,10 @@ https://mlog.club/article/1223169
     stringArrayThreshold: 0.75,
     unicodeEscapeSequence: false
 }
+
+"optimizers": {
+    "*.js": [
+      "@parcel/optimizer-esbuild",
+      "@rbf/parcel-optimizer-javascript-obfuscator"
+     
+    ]

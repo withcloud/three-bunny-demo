@@ -15,7 +15,8 @@
   "devDependencies": {
     "@parcel/optimizer-esbuild": "^2.7.0",
     "@rbf/parcel-optimizer-javascript-obfuscator": "^0.2.2",
-    "parcel": "^2.0.0"
+    "parcel": "^2.0.0",
+    "parcel-reporter-static-files-copy": "^1.4.0"
   },
   "dependencies": {
     "lodash": "^4.17.21",
