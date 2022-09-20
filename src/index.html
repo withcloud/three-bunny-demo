@@ -202,7 +202,7 @@
                 num=0//重置移除三个的数量控制重新开始
                 cube();//重新产生对象（兔子）
                 emptyNums=[]//清空重複點擊下下標集
-                $('#arClose').css('display','block')
+                $('#endGame').css('display','block')
             }
         }, 1000);
      }
@@ -438,6 +438,7 @@
 
     function animationToggleRemove(gltfIndex) {
         const audioElement  = document.getElementById('rabbitMusic');
+        audioElement.currentTime=0
         audioElement.play();
         let secondNum=1
         window.gltfIndex =  setInterval(() => {
