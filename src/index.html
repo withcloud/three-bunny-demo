@@ -18,15 +18,15 @@
     <style>
         body{
             font-family: Monospace;
-            margin:0;
-            padding:0;
+            margin: 0px;
             overflow: hidden;
         }
-        #score,#seconds {
-            width: 4rem;
+        #score,#seconds,#startButton  {
+            width: 80px;
             font-size: medium;
             border-radius: 0.2rem;
             border: none;
+            margin: 2px;
         }
 
         #score,#seconds,#startButton {
@@ -34,7 +34,6 @@
             color: white;
             padding: 5px;
             border: 1px solid white;
-            border-radius: 8%;
         }
 
         #toast_content_bg{
@@ -47,22 +46,91 @@
     </style>
         <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.js"></script>
-      <script  src="./js/camera.js"></script>
+
 </head>
-<body style="margin: 0; overflow: hidden">
-   <div id="three" style="position: relative; ">
-    <div style="position: fixed; top: 10px; right: 2vw;  color: red;">
-        <p id="seconds" >秒數：30</p>
-        <p id="score" >分數：0</p>
-        <button id="startButton" style="width: 76px;">背景音樂</button>
+<body >
+<!-- 頭像logo -->
+<div style="position: fixed; left: 0; top: 0; z-index: 100; ">
+  <img src="../logo.png" width="50px" height="50px" style="border-radius: 50%; margin: 10px;" id="openLogoModal" />
+</div>
+
+<div id="logoModal" style="display: none;">
+<div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000;">
+  <div style="width:300px; background: white; border-radius: 10px;">
+    <div style=" margin: 10px;">
+      <div style="display: flex; justify-content: center; ">
+        <img src="../logo.png" width="50px" height="50px" style="border-radius: 50%;" />
+      </div>
+      <h1 style="text-align: center;">地域科技</h1>
+      <p style="padding: 5px; text-indent: 15; line-height: 20px; font-size: 16px;">地域蛋糕-專門製作各種蛋糕：javascript蛋糕、react蛋糕、nodejs蛋糕應有盡有。</p>
+      <div style="display: flex; justify-content: space-around;">
+        <button type="button" style="border: none; background: none;"><a style="text-decoration: none; font-size: 16px;" href='https://region.mo/'>前往官方網站</a></button>
+        <button type="button" style="border: none; background: none;font-size: 16px;" id="closeLogoModal">關閉</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 開啟權限 -->
+  <div id="arAgree" style="display: none;">
+    <div style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000; ">
+      <div style="width:300px; background: white; border-radius: 10px; border: 1px solid #666;">
+        <div style=" margin: 10px;">
+          <h1 style="text-align: center;">請求權限！</h1>
+          <p style="text-align: center; line-height: 20px; font-size: 16px;">AR需要取用你的運動傳感器</p>
+          <div style="display: flex; justify-content: space-around;">
+            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;" id="startArAgree">確認</button>
+            <button type="button" style="border: none; background: none; background: red; color: white; border-radius: 5px; font-size: 14px;" id="closeArAgree">取消</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <video style="position: absolute; left: 0; top: 0; width: 100vw;  height: 100vh; z-index:-100; "/>
+  <!-- 提示結束 -->
+  <div id="arClose" style="display: none;">
+    <div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000; ">
+      <div style="width:300px; background: white; border-radius: 10px; border: 1px solid #666;">
+        <div style=" margin: 10px;">
+          <h1 style="text-align: center;">遊戲結束！</h1>
+          <p style="text-align: center; line-height: 20px; font-size: 16px;">未獲取得運動傳感器，遊戲結束！</p>
+          <div style="display: flex; justify-content: space-around;">
+            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;" onclick='resetArAgree()'>重玩</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 遊戲結束 -->
+  <div id="endGame" style="display: none;">
+    <div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000; ">
+      <div style="width:300px; background: white; border-radius: 10px; border: 1px solid #666;">
+        <div style=" margin: 10px;">
+          <h1 style="text-align: center;">遊戲結束！</h1>
+          <div style="display: flex; justify-content: space-around;">
+            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;" onclick='resetArAgree()'>重玩</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div id="three" style="position: relative;">
+      <div style="display: flex; flex-direction: column; align-items: flex-end;  position: fixed; top: 10px; right: 2vw;">
+        <p id="seconds" >秒數：30</p>
+        <p id="score" >分數：0</p>
+        <p id="startButton" >背景音樂</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <video style="position: absolute; left: 0; top: 0; width: 100%;  height: 100%; z-index:-100; "/>
   
   <audio id="backgroundMusic" loop  preload="auto" style="border: 1px solid black; padding: 5px; display: none" ><source src="14028.mp3" type="audio/mp3"> </audio>
-  <audio id="rabbitMusic" preload="auto" style="display: none">  <source src="14289.mp3" type="audio/mp3"> </audio>
+  <audio id="rabbitMusic" preload="auto" style="display: none">  <source src="9527.mp3" type="audio/mp3"> </audio>
 
 <!-- 禁止縮放 -->  
 <script>
@@ -108,14 +176,6 @@
     // mixer 和動畫有關
     let mixer1,mixer2,mixer3;
 
-    // 調試網絡速度
-    // function someMethodIThinkMightBeSlow() {
-    //     const startTime = performance.now();
-    //     // Do the normal stuff for this function
-    //     const duration = performance.now() - startTime;
-    //     console.log(`someMethodIThinkMightBeSlow took ${duration}ms`);
-    // }
-  
     // 倒计时计分
     function timers(){
         seconds=30
@@ -131,7 +191,7 @@
                 // 清空定时器
                 clearInterval( window.timer)
                 // 重新开始计时
-                timers();//重新算分
+                // timers();//重新算分
                 // 移除重新开始前的对象(兔子)
                 GLTFobjects?.forEach(function(object) {
                     scene.remove(object)
@@ -142,6 +202,7 @@
                 num=0//重置移除三个的数量控制重新开始
                 cube();//重新产生对象（兔子）
                 emptyNums=[]//清空重複點擊下下標集
+                $('#arClose').css('display','block')
             }
         }, 1000);
      }
@@ -374,12 +435,12 @@
     }
 
     // 定時移除兔子
+
     function animationToggleRemove(gltfIndex) {
+        const audioElement  = document.getElementById('rabbitMusic');
+        audioElement.play();
         let secondNum=1
         window.gltfIndex =  setInterval(() => {
-            const audioElement = document.getElementById('rabbitMusic');
-            audioElement.play();
-        
             secondNum -= 1;
             if(secondNum<=0){
                 // 移除點擊的兔子
@@ -402,7 +463,7 @@
                     allActions=[]//動畫對象重置
                 }
             }
-        },1000)
+        },100)
 
         // 點擊兔子播放音樂
     }
@@ -417,7 +478,7 @@
             audioElement.play();
         });
     }
-
+ 
     const deviceorientationEvent= async function(){
         // feature detect
         // if (typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -437,488 +498,191 @@
 
         // feature detect
         if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        //  alert("有DeviceOrientationEvent")
+       
+        // ios13以上需要请求权限
          await  DeviceOrientationEvent.requestPermission()
             .then(permissionState => {
                     // alert(permissionState)
-                    if (permissionState === 'granted') {
-                        main();
-                        animate();
+                      if (permissionState === 'granted') {
+                        startStream();
                         window.addEventListener('deviceorientation', () => {});
                     }
                 })
             .catch((err) => {console.log(err)});
         } else {
-              // handle regular non iOS 13+ devices
-              main();
-              animate();
+              // ios13以下不用手动请求权限
+              setTimeout(() => {
+                main();
+                animate();
+              },2000)
         }
     }
-
-    startGame();
-function startGame(){
-      textToast('AR需要取用你的運動傳感器',{
-          faded:false,
-          isbg:true,
-          type:'show',
-          title:'消息',
-          msgType:'suc'
-      });
-    }
-
-
-
-function animationEvent() {
-  return {
-    show: show,
-    hide: hide,
-    fadeToggle: fadeToggle,
-    fadeIn: fadeIn,
-    fadeOut: fadeOut,
-    fadeTo: fadeTo,
-    fadeToggle: fadeToggle,
-    getStyle: getStyle
-  }
-  //获取属性值
-  function getStyle(obj, prop) {
-    var prevComputedStyle = document.defaultView ? document.defaultView.getComputedStyle(obj, null) : obj.currentStyle;
-    return prevComputedStyle[prop];
-  }
-
-  /*
-    obj:dom对象
-    speed:执行速度 fast slow 3000等
-    func:回调函数
-  */
-
-  function hide(obj, speed, func) {
-    if (obj.style.display === 'none') {
-      return;
-    }
-    //获取本来的宽带和高度
-    var width = getStyle(obj, 'width');
-    var height = getStyle(obj, 'height');
-    var new_func = function () {
-      //设置回原来的高度和宽度
-      obj.style['width'] = width;
-      obj.style['height'] = height;
-      func();
-    }
-    animate(obj, { opacity: 0, display: 'none', width: 0, height: 0 }, speed, new_func);
-  }
-
-  function show(obj, speed, func) {
-    if (obj.style.display !== 'none') {
-      return;
-    }
-    //获取本来的宽带和高度
-    var width = getStyle(obj, 'width');
-    var height = getStyle(obj, 'height');
-    //设置从0开始
-    obj.style['width'] = 0;
-    obj.style['height'] = 0;
-
-    animate(obj, { opacity: 1, display: 'block', width: width, height: height }, speed, func);
-  }
-
-  function toggle(obj, speed, func) {
-    if (obj.style.display === 'none') {
-      show(obj, speed, func);
-    } else {
-      hide(obj, speed, func);
-    }
-
-  }
-  function fadeOut(obj, speed, func) {
-    animate(obj, { opacity: 0, display: 'none' }, speed, func);
-  }
-
-  function fadeIn(obj, speed, func) {
-    animate(obj, { opacity: 1, display: 'block' }, speed, func);
-  }
-
-  function fadeToggle(obj, speed, func) {
-    if (obj.style.display === 'none') {
-      fadeIn(obj, speed, func);
-    } else {
-      fadeOut(obj, speed, func);
-    }
-  }
-  function fadeTo(obj, speed, opacity, func) {
-    if (opacity > 0 && obj.style.display === 'none') {
-      animate(obj, { opacity: opacity, display: 'block' }, speed, func);
-    } else {
-      animate(obj, { opacity: opacity }, speed, func);
-    }
-  }
-  /*
-obj:dom对象
-prop:动画参数
-speed:执行速度 fast slow 3000等
-func:回调函数
-*/
-  function animate(obj, prop, speed, func) {
-    //防止重复动画事件
-    if (obj.timer) return;
-    //定义定时器执行次数和总执行时间
-    var limit = 20, totalTime;
-    if (typeof speed === 'number') {//如果传入的是
-      totalTime = speed;
-    } else if (speed === 'slow') {
-      totalTime = 600;
-    } else if (speed === 'fast') {
-      totalTime = 200;
-    } else {
-      totalTime = 400;
-    }
-
-    var time = totalTime / limit;
-
-    var n = 0, cache = {}, display, primary_cur;//cache用来缓存，省的每次都去dom获取
-    obj.timer = setInterval(function () {
-      n++;//执行次数每次递增
-      for (var p in prop) {
-        if ("display" === p) {
-          display = prop["display"];
-          if (display !== 'none') {
-            obj.style['display'] = display;
-          }
-          delete prop["display"];
-          continue;
-        }
-        //判断是否是可以递增的属性，如果不是则直接让它生效，并从prop中删除，删除后就不用每次任务都执行它
-        var reg = /^(\d)+(px$)?/;//数字和像素这样的判定为可以递增的属性
-        if (!reg.test(prop[p])) {
-          obj.style[p] = prop[p];
-          delete prop[p];
-          continue;
-        }
-
-        var value, opacityFlag = (p == "opacity") ? true : false;
-        var cur = 0;
-        if (cache[p + "_cur"]) {//从缓存中取
-          cur = cache[p + "_cur"];
-          value = cache[p + "_value"];
-        } else {
-          value = prop[p];
-          if (opacityFlag) {
-            //如果本来是隐藏的则cur默认就是0
-            if (getStyle(obj, 'display') !== 'none') {
-              cur = Math.round(parseFloat(getStyle(obj, p)) * 100);
-            }
-          } else {
-            cur = parseInt(getStyle(obj, p));
-            //处理100px的格式
-            (typeof value === 'string') && (value = value.replace(/px$/, ""));
-          }
-          primary_cur = cur;
-          cache[p + "_value"] = value;
-        }
-
-        var incre;
-        if (cache[p + '_increment']) {//如果缓存中有则从中取
-          incre = cache[p + '_increment'];
-        } else {
-          if (opacityFlag) {
-            incre = (value * 100 - cur) / limit;//计算每次变化值
-          } else {
-            incre = (value - cur) / limit;//计算每次变化值
-          }
-          cache[p + '_increment'] = incre;
-        }
-        //缓存起来，这样就不用每次都去dom中获取了。
-        cache[p + "_cur"] = cur + incre;
-
-        if (opacityFlag) {
-          obj.style.filter = "alpha(opacity:" + (cur + incre) + " )";
-          obj.style.opacity = (cur + incre) / 100;
-        } else {
-          obj.style[p] = cur + incre + "px";
-        }
+    
+    // ios history.go(-1)回退页面无效处理
+    window.addEventListener('pageshow',function(e){
+      // 通过persisted属性判断是否存在 BF Cache
+      if(e.persisted){
+        location.reload();
       }
-      //如果达到了最大执行次数，要清除定时器，并执行回调函数
-      if (n == limit) {
-        if (display === 'none') {
-          obj.style['display'] = 'none';
-        }
-        //清除定时器
-        clearInterval(obj.timer);
-        obj.timer = undefined;
-        func && func();
+      $('#logoModal').css('display','none')
+      $('#arClose').css('display','none')
+      if(getIos()){
+          // ios先提示使用陀螺仪，后续使用camera
+          $('#arAgree').css('display','block')
+      }else{
+        // android不用提示 直接加载摄像头
+          startStream();
       }
-    }, time)
-  }
-}
-
-var _ = {
-  isFunction: function (o) {
-    return o !== null && typeof o === 'function';
-  }
-}
-
-function textToast(msg, option) {
-  // title --展示的标题
-  // type --show表示一直显示，其他为短暂显示后隐藏
-  // isbg --是否有遮罩 true表示有，默认没有
-  // msgType -- 消息类型 suc表示成功会显示一个笑脸，fail显示一个哭脸 warn显示一个警告图片，默认不显示
-  // msgColor --消息内容的字体颜色，缺省默认白色
-  // color --消息内容展示区域的背景颜色，默认黑色
-  // duration --消息窗口持续时间，缺省默认3000毫秒，可以设置毫秒数、fast、normal、slow等，如果type='show'的话此字段不生效
-  // width  --消息窗口宽度 可以填400或者400px，缺省300px
-  // openCallback --消息窗口打开的回调函数
-  // closeCallback --消息窗口关闭的回调函数
-  // faded -- 渐入渐出 true/false 缺省为true
-  var animation = animationEvent();
-  var option = option || {}, duration = 3000, color = '#6a6a6a', msgColor = 'white', type, msgType = 'normal', openCallback, closeCallback, showFlag
-    , bgFlag, width = '300', left, title, faded = true
-  if (option) {
-    option.duration && (function () {
-      duration = option.duration;
-      if (duration === 'slow') {
-        duration = '3000';
-      } else if (duration === 'fast') {
-        duration = '1000';
-      } else if (duration === 'normal') {
-        duration = '2000';
-      }
-    }());
-    option.openCallback && (openCallback = option.openCallback);
-    option.closeCallback && (closeCallback = option.closeCallback);
-    option.color && (color = option.color);
-    option.msgColor && (msgColor = option.msgColor);
-    option.type && (type = option.type);
-    option.msgType && (msgType = option.msgType);
-    option.title && (title = option.title);
-
-    if (typeof option.isbg === 'boolean') {
-      bgFlag = option.isbg;
-    }
-    if (typeof option.faded === 'boolean') {
-      faded = option.faded;
-    }
-
-    (type === 'show') ? (showFlag = true) : (showFlag = false);//是否一直显示
-    if (type === 'show') {//如果是一直展示的，必须要有关闭按钮和标题
-      //判断有没有标题信息，没有就默认
-      if (!title) {
-        title = '消息';
-      }
-    }
-
-    if (option.width) {
-      var t_width = option.width;
-      if (/(\d+)px/.test(t_width) || /(\d+)/.test(t_width)) {
-        width = RegExp.$1;
-      }
-    }
-    left = (window.screen.availWidth - 30 - width) / 2 + 'px';
-    width += 'px';
-  }
-
-  var toastDiv = document.getElementById("toast_content_div");
-  if (toastDiv) {
-    if (showFlag === toastDiv.alwaysShowFlag && bgFlag === toastDiv.bgFlag) {//toastDiv div已经创建，并且显示状态没有改变，则不需要重新生成DIV
-      if (bgFlag) {//如果是有遮罩的，相互切换需要另外处理
-
-        /*var toast_content_bg = document.getElementById("toast_content_bg");
-          toast_content_bg.style.height = getToastHeight()+"px";
-        var toast_content_child_div = document.getElementById("toast_content_child_div");
-          toast_content_child_div.style.width=width;
-       toast_content_bg.childNodes[0].style.top = (window.scrollY||window.document.documentElement.scrollTop) + window.screen.availHeight * 0.25 +'px';
-       */
-        toastDiv.parentElement.removeChild(toastDiv);
-        clearTimeout(toastDiv.timmer);
-        toastDiv = null;
-      } else {
-        var toast_span_msg_id = document.getElementById("toast_span_msg_id");
-        toast_span_msg_id.innerText = msg;
-        toast_span_msg_id.style.color = msgColor;
-        toastDiv.style.backgroundColor = color;
-        toastDiv.style.top = (window.scrollY || window.document.documentElement.scrollTop) + window.screen.availHeight * 0.25 + 'px';
-
-        //用渐入来显示
-        showHide('show');
-
-        clearTimeout(toastDiv.timmer);
-        //执行显示函数
-        openCallback && _.isFunction(openCallback) && openCallback();
-        if (!showFlag) {
-          toastDiv.timmer = setTimeout(function () {
-            showHide('hide', closeCallback);
-          }, duration);
-        }
-        return;
-      }
-    } else {
-      toastDiv.parentElement.removeChild(toastDiv);
-      clearTimeout(toastDiv.timmer);
-      toastDiv = null;
-    }
-  }
-
-  var html = '';
-  toastDiv = document.createElement("div");
-  toastDiv.alwaysShowFlag = showFlag;
-  toastDiv.bgFlag = bgFlag;
-  toastDiv.id = "toast_content_div";
-  toastDiv.style.position = "absolute";
-
-  if (bgFlag) {
-    toastDiv.style.top = "0px";
-    toastDiv.style.margin = "0";
-    toastDiv.style.padding = "0";
-    html = '<div id="toast_content_bg" style="DISPLAY: block; Z-INDEX: 1; BACKGROUND: #ccc;LEFT: 0px; POSITION: absolute; TOP: 0px;FILTER: alpha(opacity=80);opacity: 0.8">';
-    html += '<div id="toast_content_child_div"  style="background:' + color + ';width:' + width + ';z-index:5;top:25%;position:absolute;border-radius:8px;FILTER: alpha(opacity=0);opacity: 0">';
-  } else {
-    toastDiv.style.cssText = "background:" + color + ";width:" + width + ";z-index:5;left:" + left + ";top:35%;position:absolute;border-radius:8px;FILTER: alpha(opacity=70);opacity: 0.7;display:none;min-height:80px;";
-  }
-
-  if (title) {
-    html += '<div style="border-bottom: 1px dashed rgb(221, 221, 221);">';
-    html += '<div><span style="display: block;font-size: 14px;padding: 8px 15px;background-color: lightgoldenrodyellow;border-radius: 8px 8px 0px 0px;border-bottom: 2px solid rgb(48, 153, 220);font-weight: bold;">' + title + '</span>';
-    // html += '<span id="msg_ico" style="display: block;position: absolute;right: 10px;top: 9px;border: 1px solid gray;width: 18px;height: 18px;text-align: center;line-height: 15px;cursor: pointer;border-radius: 12px;">x</span></div>';
-  }
-  html += '<div style="margin-left: 10px;margin-right: 10px;">';
-  if (msgType === 'suc' || msgType === 'success') {
-    html += '<span style="font-size: 40px;color: springgreen;">&#9786;</span>';
-  } else if (msgType === 'fail') {
-    html += '<span style="font-size: 40px;color: orangered;">&#9785;</span>';
-  } else if (msgType === 'warn') {
-    html += '<span style="font-size: 40px;color: yellow;">&#9888;</span>';
-  } else {//没有图片
-
-  }
-
-  html += "<span id='toast_span_msg_id' style='font-size:16px;padding-left:5px;z-index:6;text-align: center;color:" + msgColor + ";word-wrap:break-word;line-height:2;'>" + msg + "</span>";
-  html += '</div></div>';
-  function closeEvent() {
-    return closeDiv.bind(this);
-  }
-
-  if (showFlag) {
-    html += "<div style='margin:3px;text-align: center;'>"
-      + "<input id='confirmEventDiv' type='button' value='确定' style='width:85px;height:30px;color:white;border:none;cursor:pointer;background-color:rgb(187, 28, 28);letter-spacing: 6px;'>"
-      + "<input id='closeEventDiv' type='button' value='取消' style='width:85px;height:30px;color:white;border:none;cursor:pointer;background-color:slategray;margin-left: 20px;letter-spacing: 6px;'>"
-  }
-
-  if (bgFlag) {
-    html += "</div></div>";
-  }
-  toastDiv.innerHTML = html;
-  window.document.body.appendChild(toastDiv);
-
-  if (bgFlag) {
-    var toast_content_bg = document.getElementById("toast_content_bg");
-    toast_content_bg.style.width = document.body.clientWidth - 10 + "px";
-    toast_content_bg.style.height = getToastHeight() + 'px';
-    toast_content_bg.childNodes[0].style.top = (window.scrollY || window.document.documentElement.scrollTop) + window.screen.availHeight * 0.25 + 'px';
-  } else {
-    toastDiv.style.top = (window.scrollY || window.document.documentElement.scrollTop) + window.screen.availHeight * 0.25 + 'px';
-  }
-
-  //执行显示 
-  showHide('show', openCallback);
-
-  if (showFlag) {
-    var confirmEventDiv = document.getElementById("confirmEventDiv");
-    var closeEventDiv = document.getElementById("closeEventDiv");
-    // var msg_ico = document.getElementById("msg_ico");
-    if (document.addEventListener) {
-      confirmEventDiv && confirmEventDiv.addEventListener('click', confirmDiv);
-      closeEventDiv && closeEventDiv.addEventListener('click', closeDiv);
-      // msg_ico && msg_ico.addEventListener('click', closeDiv);
-    } else {
-      confirmEventDiv && confirmEventDiv.attachEvent('onclick', confirmDiv);
-      closeEventDiv && closeEventDiv.attachEvent('onclick', closeDiv);
-      // msg_ico && msg_ico.attachEvent('onclick', closeDiv);
-    }
-  }
-
-  if (!showFlag && type == 'none') {
-
-  } else if (!showFlag && type != 'none') {
-    // 不顯示確認及取消按鈕且消失
-    toastDiv.timmer = setTimeout(function () {
-      showHide('hide', closeCallback);
-    }, duration);
-  }
-
-  function getToastHeight() {
-    return window.screen.availHeight > document.body.clientHeight ? window.screen.availHeight : document.body.clientHeight;
-  }
-
-
-  function showHide(type, callback) {
-    if (bgFlag) {
-      var toast_content_bg_div = document.getElementById("toast_content_div");
-      var toast_content_child_div = document.getElementById("toast_content_child_div");
-      if (faded) {//需要执行渐入渐出动画
-        if (type === 'hide') {
-          toast_content_bg_div && (animation.fadeOut(toast_content_bg_div, 'slow'));
-          toast_content_child_div && (animation.fadeOut(toast_content_child_div, 'slow'));
-        } else {
-          toast_content_bg_div && (animation.fadeIn(toast_content_bg_div, 'slow'));
-          toast_content_child_div && (animation.fadeIn(toast_content_child_div, 'slow'));
-        }
-      } else {
-        do_showHide(toast_content_bg_div, type, true);
-        do_showHide(toast_content_child_div, type, true);
-      }
-
-    } else {
-      if (faded) {//需要执行渐入渐出动画
-        if (type === 'hide') {
-          toastDiv && (animation.fadeOut(toastDiv, 'slow'));
-        } else {
-          toastDiv && (animation.fadeIn(toastDiv, 'slow'));
-        }
-      } else {
-        do_showHide(toastDiv, type);
-      }
-    }
-
-    setTimeout(function () {
-      callback && _.isFunction(callback) && callback();
-    }, 0)
-
-    function do_showHide(el, type, opac) {
-      if (type === 'hide') {
-        el && (el.style.display = 'none');
-      } else {
-        if (el) {
-          if (opac) {
-            el.style.filter = 'alpha(opacity:100)';
-            el.style.opacity = 1;
-          }
-          el.style.display = 'block';
-        }
-      }
-    }
-  }
-
-  // 确认事件
-  async function confirmDiv() {//关闭是不执行回调函数的
-    clearTimeout(toastDiv.timmer);
-    showHide('hide', closeCallback);
-    // 開啟位置權限
-    deviceorientationEvent()
-  }
-
-  // 关闭事件
-  function closeDiv() {//关闭是不执行回调函数的
-    clearTimeout(toastDiv.timmer);
-    showHide('hide');
-    window.removeEventListener('deviceorientation', () => { });
-    textToast('未獲取得運動傳感器，遊戲結束！', {
-      faded: false,
-      isbg: true,
-      type: 'none',
-      title: '消息',
-      msgType: 'warn'
     });
-  }
-}
+   
+    // 判断是否是 ios 设备    
+    function getIos() {
+      var u = window.navigator.userAgent;
+      return !! u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    }
 
+  // 摄像头
+  function startStream(){
+    setTimeout(() => {
+      if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {};
+      }
+
+      // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+      // 因为这样可能会覆盖已有的属性。这里我们只会在没有 getUserMedia 属性的时候添加它。
+      if (navigator.mediaDevices.getUserMedia === undefined) {
+
+        navigator.mediaDevices.getUserMedia = function (constraints) {
+
+          // 首先，如果有 getUserMedia 的话，就获得它
+          var getUserMedia =
+            navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+          // 一些浏览器根本没实现它 - 那么就返回一个 error 到 promise 的 reject 来保持一个统一的接口
+          if (!getUserMedia) {
+            return Promise.reject(
+              new Error("getUserMedia is not implemented in this browser")
+            );
+          }
+
+          // 否则，为老的 navigator.getUserMedia 方法包裹一个 Promise
+          return new Promise(function (resolve, reject) {
+            getUserMedia.call(navigator, constraints, resolve, reject);
+          });
+        };
+      }
+
+      const aspect = window.innerHeight / window.innerWidth;
+
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          frameRate: { ideal: 30, max: 60 },
+          facingMode: { exact: "environment" },
+          height: { min: 320, ideal: 480, max: 800 },
+          width: { min: 320 * aspect, ideal: 480 * aspect, max: 800 * aspect },
+        },
+      })
+        .then(function (stream) {
+          //  当用户点击对话框中允许调用相机按钮执行的事件
+          var video = document.querySelector("video");
+
+          video.setAttribute("playsinline", true);
+
+          // 旧的浏览器可能没有 srcObject
+          if ("srcObject" in video) {
+            video.srcObject = stream;
+
+          } else {
+            // 防止在新的浏览器里使用它，应为它已经不再支持了
+            video.src = window.URL.createObjectURL(stream);
+          }
+          video.onloadedmetadata = function (e) {
+            video.play();
+          };
+          // setTimeout(() => {
+            main();
+            animate();
+          // },2000)
+        })
+        .catch(function (err) {
+          // 当用户点击对话框中禁止按钮，或者其他错误
+          window.removeEventListener('deviceorientation', () => { });
+          // alert(err)
+          $('#endGame').css('display','block')
+          console.log(err.name + ": " + err.message);
+        });
+      },500)
+  }
+
+
+    $('#logoModal').css('display','none')
+    $('#arClose').css('display','none')
+
+    $('#openLogoModal').click(()=>{
+      $('#logoModal').css('display','block')
+    })
+
+    $('#closeLogoModal').click(()=>{
+      $('#logoModal').css('display','none')
+    })
+
+    $('#arClose').click(()=>{
+      $('#arClose').css('display','block')
+      $('#logoModal').css('display','none')
+    })
+
+    $('#startArAgree').click(()=>{
+      $('#arAgree').css('display','none')
+      deviceorientationEvent()//開啟遊戲
+    })
+    
+    $('#closeArAgree').click(()=>{
+      $('#arAgree').css('display','none')
+      $('#arClose').css('display','block')
+    })
+
+    $('#arClose').click(()=>{
+      $('#arClose').css('display','none')
+      $('#startArAgree').css('display','block')
+      removeScene()
+    })
+
+ 
+    const stopMediaStream =function(){
+      var MediaStream = window.MediaStream;
+      window.mediaStreamTrack && window.mediaStreamTrack.stop();//關閉攝像頭
+      if (typeof MediaStream === 'undefined' && typeof webkitMediaStream !== 'undefined') {
+          MediaStream = webkitMediaStream;
+      }
+
+      /*global MediaStream:true */
+      if (typeof MediaStream !== 'undefined' ) {
+          MediaStream.prototype.stop = function() {
+              this.getTracks().forEach(function(track) {
+                  track.stop();
+              });
+          };
+      }
+    }
+
+</script>
+
+</script>
+
+<script>
+  function resetArAgree(){
+    window.location.reload()
+    // window.onload(); 
+  }
+
+ function closeAll(){
+    $('#endGame').css('display','none')
+    $('#arAgree').css('display','none')
+    $('#logoModal').css('display','none')
+    $('#arClose').css('display','block')
+    const bgm=document.getElementById('backgroundMusic');
+    bgm.pause()//關閉背景音樂
+ }
 </script>
 </body>
 </html>
