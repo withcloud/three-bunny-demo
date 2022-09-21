@@ -660,11 +660,16 @@
         .catch(function (err) {
           // 当用户点击对话框中禁止按钮，或者其他错误
           // window.removeEventListener('deviceorientation', () => { });
-          // alert(err)
-          $('#copyLink').css('display','block')
+          // alert(err.name)
+          if(err.name=='NotFoundError'){
+            alert("未找到攝像頭")
+          }else{
+            $('#copyLink').css('display','block')
+            $('#endGame').css('display','none')
+          }
           console.log(err.name + ": " + err.message);
         });
-      },500)
+      },1000)
   }
 
 
