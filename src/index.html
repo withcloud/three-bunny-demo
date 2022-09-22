@@ -150,9 +150,9 @@
           <div style="display: flex; justify-content: center; ">
             <img src="../logo.png" width="50px" height="50px" style="border-radius: 50%;" />
           </div>
-          <h1 style="text-align: center;">請跳轉瀏覽器打開</h1>
+          <h1 style="text-align: center;">此瀏覽器不支持</h1>
           <p style="text-align: center; line-height: 20px; font-size: 16px;">請使用Chrome瀏覽器或手機原生瀏覽器開啟，可複製網址並於瀏覽器中開啟</p>
-          <input type="text" size="30" style=" border-radius: 1%; border: 1 px solid; border-color: rgb(212, 203, 203); padding: 5px;" id="copyUrl" value="https://moon.region.mo/">
+          <input type="text" size="30" style=" border-radius: 1%; border: 1 px solid; border-color: rgb(212, 203, 203); padding: 5px;" id="copyUrl" value="">
           <div style="display: flex; justify-content: space-around;">
             <button type="button" style="border: none; background: none; margin-top: 10px; background: green; color: white; border-radius: 5px; font-size: 14px;" onclick="copyUrl.select();document.execCommand('Copy')">複製鏈接</button>
           </div>
@@ -570,11 +570,18 @@
       }
       $('#logoModal').css('display','none')
       $('#arClose').css('display','none')
+      $('#copyUrl').attr('value',window.location.origin)//可複製的網址
 
       var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
-      if (ua.match(/MicroMessenger/i) == "micromessenger"||ua.match(/WeiBo/i) == "weibo"||ua.match(/QQ/i) == "qq") {
+      if (ua.match(/MicroMessenger/i) == "micromessenger") {
             //在微信中打开browserPrompt
             alert("點擊右上角三個點，在下方選擇“在瀏覽器打開”，選擇chrome瀏覽器打開")
+      }else if(ua.match(/QQ/i) == "qq"){
+            $('#copyLink').css('display','block')
+            $('#endGame').css('display','none')
+      }else if(ua.match(/WeiBo/i) == "weibo"){
+           $('#copyLink').css('display','block')
+            $('#endGame').css('display','none')
       }else{
         if(getIos()){
           // ios先提示使用陀螺仪，后续使用camera
