@@ -56,23 +56,6 @@
     <img src="../logo.png" width="50px" height="50px" style="border-radius: 50%; margin: 10px;" id="openLogoModal" />
   </div>
 
-  <!-- <div id="logoModal" style="display: none;">
-    <div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000;">
-      <div style="width:300px; background: white; border-radius: 10px;">
-        <div style=" margin: 10px;">
-          <div style="display: flex; justify-content: center; ">
-            <img src="../logo.png" width="50px" height="50px" style="border-radius: 50%;" />
-          </div>
-          <h1 style="text-align: center;">地域科技</h1>
-          <p style="padding: 5px; text-indent: 15; line-height: 20px; font-size: 16px;">地域蛋糕-專門製作各種蛋糕：javascript蛋糕、react蛋糕、nodejs蛋糕應有盡有。</p>
-          <div style="display: flex; justify-content: space-around;">
-            <button type="button" style="border: none; background: none;"><a style="text-decoration: none; font-size: 16px;" href='https://region.mo/'>前往官方網站</a></button>
-            <button type="button" style="border: none; background: none;font-size: 16px;" id="closeLogoModal">關閉</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div id="logoModal" style="display: none;" class="relative z-10">
     <div class="fixed inset-0 z-10 overflow-y-auto">
       <div
@@ -85,7 +68,7 @@
             <div style="display: flex; justify-content: center; ">
               <img src="../logo.png"  style="border-radius: 50%; width: 50px;height: 50px;" />
             </div>
-            <h1 style="text-align: center;">地域科技</h1>
+            <h1 style="text-align: center;" class="text-xl">地域科技</h1>
             <p style="padding: 5px; text-indent: 15; line-height: 20px; font-size: 16px;">地域蛋糕-專門製作各種蛋糕：javascript蛋糕、react蛋糕、nodejs蛋糕應有盡有。</p>
             <div style="display: flex; justify-content: space-around;">
               <button type="button" style="border: none; background: none;"><a style="text-decoration: none; font-size: 16px;" href='https://region.mo/'>前往官方網站</a></button>
@@ -119,11 +102,24 @@
     <div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000; ">
       <div style="width:300px; background: white; border-radius: 10px; border: 1px solid #666;">
         <div style=" margin: 10px;">
-          <h1 style="text-align: center;">遊戲結束！</h1>
+          <h1 style="text-align: center;" class="text-xl">遊戲結束！</h1>
           <p style="text-align: center; line-height: 20px; font-size: 16px;">未獲取得運動傳感器，遊戲結束！</p>
           <div style="display: flex; justify-content: space-around;">
-            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;" onclick='resetArAgree()'>重玩</button>
+            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;"  class="px-2 py-1 "  onclick='resetArAgree()'>重玩</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 相機取消權限 -->
+  <div id="cameraReject" style="display: none; "  >
+    <div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0;  background: green; display: flex;  justify-content: center; align-items: center; z-index:10000; ">
+      <div style="width:300px; background: white;  border-radius: 10px; border: 1px solid #666;">
+        <div style=" margin: 10px;">
+          <h1 style="text-align: center;" class="text-xl">遊戲提示！</h1>
+          <p style="text-align: center; line-height: 20px; font-size: 16px;">重新加載頁面並啟用相機訪問</p>
+          <p style="text-align: center; line-height: 20px; font-size: 12px;">確保在應用程序Google Chrome設置中允許相機訪問</p>
         </div>
       </div>
     </div>
@@ -134,9 +130,9 @@
     <div  style=" position: absolute; top: 0; left: 0; right: 0;  bottom: 0; display: flex;  justify-content: center; align-items: center; z-index:10000; ">
       <div style="width:300px; background: white; border-radius: 10px; border: 1px solid #666;">
         <div style=" margin: 10px;">
-          <h1 style="text-align: center;">遊戲結束！</h1>
+          <h1 style="text-align: center;" class="text-xl">遊戲結束！</h1>
           <div style="display: flex; justify-content: space-around;">
-            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;" onclick='resetArAgree()'>重玩</button>
+            <button type="button" style="border: none; background: none; background: green; color: white; border-radius: 5px; font-size: 14px;" class="px-2 py-1"  onclick='resetArAgree()'>重玩</button>
           </div>
         </div>
       </div>
@@ -558,7 +554,7 @@
                       if (permissionState === 'granted') {
                         startStream();
                         window.addEventListener('deviceorientation', () => {});
-                    }
+                      }
                 })
             .catch((err) => {console.log(err)});
         } else {
@@ -637,11 +633,9 @@
           // 当用户点击对话框中禁止按钮，或者其他错误
           // window.removeEventListener('deviceorientation', () => { });
           // alert(err.message)
-          if(err.name=='NotFoundError'||err.name=="Error"){
-            $('#copyLink').css('display','block')
-            $('#endGame').css('display','none')
-          }else{
-            $('#copyLink').css('display','block')
+          if(err.message=="Permission denied"){
+            $('#cameraReject').css('display','block');
+            $('#copyLink').css('display','none')
             $('#endGame').css('display','none')
           }
           console.log(err.name + ": " + err.message);
@@ -667,24 +661,6 @@
          webApp: u.indexOf('Safari') == -1, //是否web应该程序，没有头部与底部  
        };
      }(),
-   os:function() { 
-       var ua = navigator.userAgent, 
-       isWindowsPhone = /(?:Windows Phone)/.test(ua), 
-       isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone,  
-       isAndroid = /(?:Android)/.test(ua),  
-       isFireFox = /(?:Firefox)/.test(ua),  
-       isChromeSafari = /(?:Chrome|CriOS)/.test(ua)||/Safari/.test(ua), 
-       isTablet = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua)), 
-       isPhone = /(?:iPhone)/.test(ua) && !isTablet, 
-       isPc = !isPhone && !isAndroid && !isSymbian
-       return { 
-         isTablet: isTablet, 
-         isPhone: isPhone, 
-         isAndroid : isAndroid, 
-         isPc : isPc 
-       }; 
-     }(),
-     language: (navigator.browserLanguage || navigator.language).toLowerCase(),
      // 打開對象
      openObject:function(){
        var ua = navigator.userAgent
